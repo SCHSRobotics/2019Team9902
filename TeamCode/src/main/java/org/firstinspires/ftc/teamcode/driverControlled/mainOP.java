@@ -40,11 +40,10 @@ import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
 
 /**
  Non Linear Main OP mode
- Itmm 10/12/19
+ Itmm 10/12/19 with plenty of code from sketchy hacker kid
  */
 
 @TeleOp(name="Main OP", group="Iterative Opmode")
-@Disabled
 public class mainOP extends OpMode
 {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
@@ -91,17 +90,19 @@ public class mainOP extends OpMode
         DcMotor[] motors = {hardwareMap.dcMotor.get("fl"),hardwareMap.dcMotor.get("fr"),hardwareMap.dcMotor.get("bl"),hardwareMap.dcMotor.get("br")};
         mecanumdriver mecanum =  new mecanumdriver();
         double deadzone = .1; //The sticks must move more than this in order to actually count for anything
-        //This reads the sticks and sets them to what the
-        float y = -gamepad1.right_stick_y;
-        float x = -gamepad1.right_stick_x;
-        float R = gamepad1.left_stick_x*.5f;
+        //This reads the sticks and sets them to what they are
+        //Rotationcoeff sets the sensitivity of Rotation. Higher is faster and vice versa
+        float rotationcoeff = .5f;
+        float y = -gamepad1.left_stick_y;
+        float x = -gamepad1.left_stick_x;
+        float R = gamepad1.right_stick_x*rotationcoeff;
         //This acutally does the deadzone stuff by seeing if the absolute value of the sticks is greater than the deadzone, and if not sets the value to zero
         if(Math.abs(y)<deadzone)y=0;
         if(Math.abs(x)<deadzone)x=0;
         if(Math.abs(R)<deadzone)R=0;
         // This calls the mecanum driver which does the magic sauce
         mecanum.mecanumpower(motors, y, x, R);
-
+        telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);
 
 
         //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
