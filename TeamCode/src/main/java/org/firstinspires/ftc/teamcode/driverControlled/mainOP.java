@@ -29,11 +29,10 @@
 
 package org.firstinspires.ftc.teamcode.driverControlled;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
@@ -88,6 +87,7 @@ public class mainOP extends OpMode
     @Override
     public void loop() {
         DcMotor[] motors = {hardwareMap.dcMotor.get("fl"),hardwareMap.dcMotor.get("fr"),hardwareMap.dcMotor.get("bl"),hardwareMap.dcMotor.get("br")};
+        Servo grabberservo = hardwareMap.servo.get("grabbyboi");
         mecanumdriver mecanum =  new mecanumdriver();
         double deadzone = .1; //The sticks must move more than this in order to actually count for anything
         //This reads the sticks and sets them to what they are
@@ -103,8 +103,25 @@ public class mainOP extends OpMode
         // This calls the mecanum driver which does the magic sauce
         mecanum.mecanumpower(motors, y, x, R);
         telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);
+        //do the grabber stuff
+        int closedposition = 80;
+        int openposition = 90;
+        if(gamepad1.a) {
+            grabberservo.setPosition(closedposition);
+        }
+        else {
+            grabberservo.setPosition(openposition);
+        }
+        //debug stuff
+        DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
+        DcMotor br = hardwareMap.get(DcMotor.class, "br");
+        DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
+        DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
+        telemetry.addData("Motor Power", "fr (%.2f), br (%.2f),  fl (%.2f), bl (%.2f)", fr.getPower(), br.getPower(), fl.getPower(), bl.getPower());
 
 
+
+         //end debug stuff
         //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
         double hertz;
         // find the hertz of the control loop by using a timer
