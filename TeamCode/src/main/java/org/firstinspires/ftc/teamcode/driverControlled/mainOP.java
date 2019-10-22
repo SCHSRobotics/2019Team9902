@@ -58,10 +58,6 @@ public class mainOP extends OpMode
         DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
         DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
         DcMotor[] motors = {fr, br, fl, bl}; //This puts the hardwaremapped motors into a list, so that we can send it to the mecanum driver easier
-        fl.setDirection(DcMotor.Direction.REVERSE); // These two lines reverse the motor directions on the left side
-        bl.setDirection(DcMotor.Direction.REVERSE);
-        fl.setDirection(DcMotor.Direction.FORWARD); // These two lines just say that the motors on the right are normal
-        bl.setDirection(DcMotor.Direction.FORWARD);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "initeded");
     }
@@ -92,14 +88,14 @@ public class mainOP extends OpMode
         double deadzone = .1; //The sticks must move more than this in order to actually count for anything
         //This reads the sticks and sets them to what they are
         //Rotationcoeff sets the sensitivity of Rotation. Higher is faster and vice versa
-        float rotationcoeff = .5f;
+        float rotationcoeff = -1.25f;
         float y = -gamepad1.left_stick_y;
         float x = -gamepad1.left_stick_x;
         float R = gamepad1.right_stick_x*rotationcoeff;
         //This acutally does the deadzone stuff by seeing if the absolute value of the sticks is greater than the deadzone, and if not sets the value to zero
         if(Math.abs(y)<deadzone)y=0;
         if(Math.abs(x)<deadzone)x=0;
-        if(Math.abs(R)<deadzone)R=0;
+        if(Math.abs(R)<0)R=0;
         // This calls the mecanum driver which does the magic sauce
         mecanum.mecanumpower(motors, y, x, R);
         telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);

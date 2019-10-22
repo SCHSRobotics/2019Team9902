@@ -16,10 +16,10 @@ public class mecanumdriver {
         DcMotor fr = l[1];
         DcMotor bl = l[2];
         DcMotor br = l[3];
-        float flPWR = (y + x + r);
-        float blPWR = (y - x + r );
-        float frPWR = (y - x - r);
-        float brPWR = (y + x - r);
+        float flPWR = -(y - x + r);
+        float blPWR = -(y + x + r);
+        float frPWR = (y + x - r);
+        float brPWR = (y - x - r);
         fl.setPower(flPWR);
         bl.setPower(blPWR);
         fr.setPower(frPWR);
