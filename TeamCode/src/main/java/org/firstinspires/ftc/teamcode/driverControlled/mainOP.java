@@ -84,6 +84,7 @@ public class mainOP extends OpMode
     public void loop() {
         DcMotor[] motors = {hardwareMap.dcMotor.get("fl"),hardwareMap.dcMotor.get("fr"),hardwareMap.dcMotor.get("bl"),hardwareMap.dcMotor.get("br")};
         Servo grabberservo = hardwareMap.servo.get("grabbyboi");
+        DcMotor liftArm = hardwareMap.dcMotor.get("liftArm");
         mecanumdriver mecanum =  new mecanumdriver();
         double deadzone = .1; //The sticks must move more than this in order to actually count for anything
         //This reads the sticks and sets them to what they are
@@ -107,6 +108,16 @@ public class mainOP extends OpMode
         }
         else {
             grabberservo.setPosition(openposition);
+        }
+        if(gamepad1.dpad_down){
+            liftArm.setPower(128);
+        } else {
+            liftArm.setPower(0);
+        }
+        if(gamepad1.dpad_up){
+            liftArm.setPower(-128);
+        } else {
+            liftArm.setPower(0);
         }
         //debug stuff
         DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
