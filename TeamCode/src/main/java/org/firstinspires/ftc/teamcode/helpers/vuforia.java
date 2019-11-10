@@ -152,9 +152,6 @@ public class vuforia {
 
             parameters.vuforiaLicenseKey = VUFORIA_KEY;
 
-            /**
-             * We also indicate which camera on the RC we wish to use.
-             */
             parameters.cameraName = webcamName;
 
             //  Instantiate the Vuforia engine
@@ -197,10 +194,10 @@ public class vuforia {
             rear2.setName("Rear Perimeter 2");
 
             // For convenience, gather together all the trackable objects in one easily-iterable collection */
-            List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+            List<VuforiaTrackable> allTrackables = new ArrayList<>();
             allTrackables.addAll(targetsSkyStone);
 
-            /**
+            /*
              * In order for localization to work, we need to tell the system where each target is on the field, and
              * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
              * Transformation matrices are a central, important concept in the math here involved in localization.
@@ -311,7 +308,6 @@ public class vuforia {
                     .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
                     .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
 
-            /**  Let all the trackable listeners know where the phone is.  */
             for (VuforiaTrackable trackable : allTrackables) {
                 ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
             }
