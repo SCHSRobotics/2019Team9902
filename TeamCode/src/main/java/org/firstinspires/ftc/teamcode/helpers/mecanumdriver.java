@@ -11,11 +11,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class mecanumdriver {
     //Call this function with y x and r values with y being forward backwards, x being strafe left right, and r being rotation. This is for driver controlled mode so no encoders or units
     // PWR = power
-    public void mecanumpower(DcMotor[] l, float y, float x, float r) {
-        DcMotor fl = l[0];
-        DcMotor fr = l[1];
-        DcMotor bl = l[2];
-        DcMotor br = l[3];
+    DcMotor fl;
+    DcMotor bl;
+    DcMotor fr;
+    DcMotor br;
+    public mecanumdriver(DcMotor [] M1){
+         fl = M1[0];
+         fr = M1[1];
+         bl = M1[2];
+         br = M1[3];
+    }
+    public void mecanumpower(float y, float x, float r) {
         float flPWR = -(y - x + r);
         float blPWR = -(y + x + r);
         float frPWR = (y + x - r);

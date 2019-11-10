@@ -3,27 +3,30 @@ package org.firstinspires.ftc.teamcode.helpers;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 public class armDriver {
-    public void grabberArm(DcMotor [] Ml, Servo [] Sl, int tiltPosition, int linearExtension, int wristPos, int grabPos) {
-        DcMotor linearMotor = Ml[0];
-        DcMotor tiltMotor = Ml[1];
+    DcMotor linearMotor;
+    DcMotor tiltMotor;
 
-        Servo wristServo = Sl[0];
-        Servo grabServo = Sl[1];
+    Servo wristServo;
+    Servo grabServo;
+    int tiltArmPosition;
+    public armDriver(DcMotor [] Ml, Servo [] Sl) {
+        linearMotor = Ml[0];
+        tiltMotor = Ml[1];
 
-        tiltArm(tiltMotor, tiltPosition);
-        linearArm(linearMotor, linearExtension);
-        grabberHand(wristServo, grabServo, wristPos, grabPos);
+        wristServo = Sl[0];
+        grabServo = Sl[1];
+
     }
-    private void tiltArm(DcMotor tiltMotor, int position) {
-        if (position < 500) {
+    public void tiltArm(int position) {
+        if (position < 500 && position > 0) { //Change this in order to set the endstop
             tiltMotor.setTargetPosition(position);
         }
     }
-    private void grabberHand(Servo grabServo, Servo wristServo, int grabPos, int wristPos) {
+    public void grabberHand(Servo grabServo, Servo wristServo, int grabPos, int wristPos) {
         grabServo.setPosition(grabPos);
         wristServo.setPosition(wristPos);
     }
-    private void linearArm(DcMotor linearMotor, int position) {
+    public void linearArm(int position) {
         if (position < 500) {
             linearMotor.setTargetPosition(position);
         }

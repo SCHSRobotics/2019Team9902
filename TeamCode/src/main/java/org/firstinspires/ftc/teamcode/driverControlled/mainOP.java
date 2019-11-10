@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.driverControlled;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -46,108 +47,69 @@ import org.firstinspires.ftc.teamcode.helpers.vuforia;
  */
 
 @TeleOp(name="Main OP", group="Iterative Opmode")
-public class mainOP extends OpMode
-{
+public class mainOP extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
+    //starts the class things up here so they can be used in all of the things
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
-    @Override
-    public void init() {
+    @Override public void runOpMode() {
+        //make the helper classes
         telemetry.addData("Status", "Start init");
-        DcMotor tiltMotor = hardwareMap.get(DcMotor.class, "tiltMotor");
-        DcMotor linearMotor = hardwareMap.get(DcMotor.class, "linearMotor");
-        // Tell the driver that initialization is complete.
+
+
+        WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        vuforia vuforia = new vuforia();
+
+
+        DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
+        Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
+        DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
+        //make the helper classes
+        mecanumdriver mecanum = new mecanumdriver(driveMotors);
+        armDriver grabberArm = new armDriver(armMotors, handServos);
+        DcMotor tiltMotor = armMotors[0];
+        DcMotor linearMotor = armMotors[1];
         tiltMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         telemetry.addData("Status", "initeded");
-    }
+        vuforia.vuforiaPosition(webcam0, cameraMonitorViewId);
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
+        waitForStart();
+        while (!isStopRequested()) {
+            double deadzone = .1; //The sticks must move more than this in order to actually count for anything
+            //This reads the sticks and sets them to what they are
+            //Rotationcoeff sets the sensitivity of Rotation. Higher is faster and vice versa
+            float rotationcoeff = -1.25f;
+            float y = -gamepad1.left_stick_y;
+            float x = -gamepad1.left_stick_x;
+            float R = gamepad1.right_stick_x * rotationcoeff;
+            //This acutally does the deadzone stuff by seeing if the absolute value of the sticks is greater than the deadzone, and if not sets the value to zero
+            if (Math.abs(y) < deadzone) y = 0;
+            if (Math.abs(x) < deadzone) x = 0;
+            if (Math.abs(R) < 0) R = 0;
+            // This calls the mecanum driver which does the magic sauce
+            mecanum.mecanumpower(y, x, R);
+            telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);
+            //do the grabber stuff
+            int closedposition = 80;
+            int openposition = 90;
+            //debug stuff
+            DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
+            DcMotor br = hardwareMap.get(DcMotor.class, "br");
+            DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
+            DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
+            telemetry.addData("Motor Power", "fr (%.2f), br (%.2f),  fl (%.2f), bl (%.2f)", fr.getPower(), br.getPower(), fl.getPower(), bl.getPower());
 
-    }
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        vuforia vuforia = new vuforia();
-        vuforia.vuforiaPosition(webcamName, cameraMonitorViewId);
-    }
-
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
-        DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"),hardwareMap.dcMotor.get("fr"),hardwareMap.dcMotor.get("bl"),hardwareMap.dcMotor.get("br")};
-        Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
-        DcMotor[] ArmMotors = {hardwareMap.dcMotor.get("liftArm"), hardwareMap.dcMotor.get("linearMotor")};
-
-        //make the helper classes
-        mecanumdriver mecanum =  new mecanumdriver();
-        armDriver grabberArm = new armDriver();
-        double deadzone = .1; //The sticks must move more than this in order to actually count for anything
-        //This reads the sticks and sets them to what they are
-        //Rotationcoeff sets the sensitivity of Rotation. Higher is faster and vice versa
-        float rotationcoeff = -1.25f;
-        float y = -gamepad1.left_stick_y;
-        float x = -gamepad1.left_stick_x;
-        float R = gamepad1.right_stick_x*rotationcoeff;
-        //This acutally does the deadzone stuff by seeing if the absolute value of the sticks is greater than the deadzone, and if not sets the value to zero
-        if(Math.abs(y)<deadzone)y=0;
-        if(Math.abs(x)<deadzone)x=0;
-        if(Math.abs(R)<0)R=0;
-        // This calls the mecanum driver which does the magic sauce
-        mecanum.mecanumpower(driveMotors, y, x, R);
-        telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);
-        //do the grabber stuff
-        int closedposition = 80;
-        int openposition = 90;
-       /*if(gamepad1.dpad_down){
-            liftArm.setPower(128);
-        } else {
-            liftArm.setPower(0);
+            //end debug stuff
+            //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
+            double hertz;
+            // find the hertz of the control loop by using a timer
+            hertz = 1 / (runtime.time());
+            telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
+            runtime.reset(); //Reset the Timer
         }
-        if(gamepad1.dpad_up){
-            liftArm.setPower(-128);
-        } else {
-            liftArm.setPower(0);
-        }*/
-        //debug stuff
-        DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
-        DcMotor br = hardwareMap.get(DcMotor.class, "br");
-        DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
-        DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
-        telemetry.addData("Motor Power", "fr (%.2f), br (%.2f),  fl (%.2f), bl (%.2f)", fr.getPower(), br.getPower(), fl.getPower(), bl.getPower());
-
-
-
-         //end debug stuff
-        //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
-        double hertz;
-        // find the hertz of the control loop by using a timer
-        hertz = 1/(runtime.time());
-        telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
-        runtime.reset(); //Reset the Timer
     }
-
-    /*
-     * Code after Driver hits end. Probably nothing here
-     */
-    @Override
-    public void stop() {
-
-    }
-
 }
