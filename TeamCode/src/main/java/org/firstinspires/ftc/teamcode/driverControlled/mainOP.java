@@ -35,7 +35,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.helpers.armDriver;
 import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
+import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
 /**
  Non Linear Main OP mode
@@ -53,12 +56,13 @@ public class mainOP extends OpMode
     @Override
     public void init() {
         telemetry.addData("Status", "Start init");
-        DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
-        DcMotor br = hardwareMap.get(DcMotor.class, "br");
-        DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
-        DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
-        DcMotor[] motors = {fr, br, fl, bl}; //This puts the hardwaremapped motors into a list, so that we can send it to the mecanum driver easier
+        DcMotor tiltMotor = hardwareMap.get(DcMotor.class, "tiltMotor");
+        DcMotor linearMotor = hardwareMap.get(DcMotor.class, "linearMotor");
         // Tell the driver that initialization is complete.
+        tiltMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         telemetry.addData("Status", "initeded");
     }
 
@@ -75,6 +79,10 @@ public class mainOP extends OpMode
      */
     @Override
     public void start() {
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        vuforia vuforia = new vuforia();
+        vuforia.vuforiaPosition(webcamName, cameraMonitorViewId);
     }
 
     /*
@@ -82,10 +90,13 @@ public class mainOP extends OpMode
      */
     @Override
     public void loop() {
-        DcMotor[] motors = {hardwareMap.dcMotor.get("fl"),hardwareMap.dcMotor.get("fr"),hardwareMap.dcMotor.get("bl"),hardwareMap.dcMotor.get("br")};
-        Servo grabberservo = hardwareMap.servo.get("grabbyboi");
-        DcMotor liftArm = hardwareMap.dcMotor.get("liftArm");
+        DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"),hardwareMap.dcMotor.get("fr"),hardwareMap.dcMotor.get("bl"),hardwareMap.dcMotor.get("br")};
+        Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
+        DcMotor[] ArmMotors = {hardwareMap.dcMotor.get("liftArm"), hardwareMap.dcMotor.get("linearMotor")};
+
+        //make the helper classes
         mecanumdriver mecanum =  new mecanumdriver();
+        armDriver grabberArm = new armDriver();
         double deadzone = .1; //The sticks must move more than this in order to actually count for anything
         //This reads the sticks and sets them to what they are
         //Rotationcoeff sets the sensitivity of Rotation. Higher is faster and vice versa
@@ -98,18 +109,12 @@ public class mainOP extends OpMode
         if(Math.abs(x)<deadzone)x=0;
         if(Math.abs(R)<0)R=0;
         // This calls the mecanum driver which does the magic sauce
-        mecanum.mecanumpower(motors, y, x, R);
+        mecanum.mecanumpower(driveMotors, y, x, R);
         telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);
         //do the grabber stuff
         int closedposition = 80;
         int openposition = 90;
-        if(gamepad1.a) {
-            grabberservo.setPosition(closedposition);
-        }
-        else {
-            grabberservo.setPosition(openposition);
-        }
-        if(gamepad1.dpad_down){
+       /*if(gamepad1.dpad_down){
             liftArm.setPower(128);
         } else {
             liftArm.setPower(0);
@@ -118,7 +123,7 @@ public class mainOP extends OpMode
             liftArm.setPower(-128);
         } else {
             liftArm.setPower(0);
-        }
+        }*/
         //debug stuff
         DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
         DcMotor br = hardwareMap.get(DcMotor.class, "br");
