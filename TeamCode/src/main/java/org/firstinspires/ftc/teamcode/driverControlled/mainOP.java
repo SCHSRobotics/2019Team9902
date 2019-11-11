@@ -46,7 +46,7 @@ import org.firstinspires.ftc.teamcode.helpers.vuforia;
  Itmm 10/12/19 with plenty of code from sketchy hacker kid
  */
 
-@TeleOp(name="Main OP", group="Iterative Opmode")
+@TeleOp(name="Main OP", group="LinearOPMode")
 public class mainOP extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
@@ -91,23 +91,33 @@ public class mainOP extends LinearOpMode {
             if (Math.abs(R) < 0) R = 0;
             // This calls the mecanum driver which does the magic sauce
             mecanum.mecanumpower(y, x, R);
-            telemetry.addData("Mecaunm Driver Inputs", "x (%.2f), y (%.2f), R (%.2f)", x, y, R);
-            //do the grabber stuff
-            int closedposition = 80;
-            int openposition = 90;
+
+            // do the inputs stuff
+
+            //linear acutator
+            if(gamepad2.left_bumper) grabberArm.extendArm();
+            if(gamepad2.right_bumper) grabberArm.retractArm();
+
+            //tiltArm
+            if(gamepad2.left_trigger > 0) grabberArm.tiltArm(-gamepad2.left_trigger);
+            else if(gamepad2.right_trigger > 0) grabberArm.tiltArm(gamepad2.right_trigger);
+
+            //Grabber Wrist
+            if(gamepad2.dpad_left) grabberArm.turnGrabberCCW();
+            if(gamepad2.dpad_right) grabberArm.turnGrabberCW();
+
+            //grabber itself
+            if(gamepad2.a) grabberArm.realse();
+            if(gamepad2.b) grabberArm.grab();
+
+
+
             //debug stuff
-            DcMotor fr = hardwareMap.get(DcMotor.class, "fr"); //This gets the actual hardware maps of the motors from the config file. The deviceName is what it is named in the config file
-            DcMotor br = hardwareMap.get(DcMotor.class, "br");
-            DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
-            DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
-            telemetry.addData("Motor Power", "fr (%.2f), br (%.2f),  fl (%.2f), bl (%.2f)", fr.getPower(), br.getPower(), fl.getPower(), bl.getPower());
-
-
+            //telemetry.addData("Vuforia", "(%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f)", vuforia.vuforiaPos[0], vuforia.vuforiaPos[1], vuforia.vuforiaPos[2], vuforia.vuforiaRot[0], vuforia.vuforiaRot[1], vuforia.vuforiaRot[2]);
             //end debug stuff
             //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
-            double hertz;
             // find the hertz of the control loop by using a timer
-            hertz = 1 / (runtime.time());
+            double hertz = 1 / (runtime.time());
             telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
             runtime.reset(); //Reset the Timer
         }
