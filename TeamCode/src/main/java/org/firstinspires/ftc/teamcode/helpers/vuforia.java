@@ -83,10 +83,13 @@ public class vuforia {
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     private static final boolean PHONE_IS_PORTRAIT = false;
-    public float vuforiaPos[];
-    public float vuforiaRot[];
+    public float[] vuforiaPos = {0, 0, 0};
+    public float[] vuforiaRot = {0, 0, 0};
     public boolean targetIsBlock;
-    public boolean vuforiaRunning = false;
+    public boolean runVuforia = false;
+
+
+    public double vuforiaRun = 0;
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -133,9 +136,11 @@ public class vuforia {
     private float phoneXRotate = 0;
     private float phoneYRotate = 0;
     private float phoneZRotate = 0;
+    public void stopVuforia(){
 
+    }
     public void vuforiaPosition(WebcamName webcamName, int cameraMonitorViewId) {
-            vuforiaRunning = true;
+            runVuforia = true;
             //the start of tha actual code
             /*
              * Retrieve the camera we are to use.
@@ -319,45 +324,47 @@ public class vuforia {
             targetsSkyStone.activate();
 
             // check all the trackable targets to see which one (if any) is visible.
+            while(runVuforia== true) {
+                targetVisible = false;
+                for (VuforiaTrackable trackable : allTrackables) {
+                    if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                        if (trackable.getName() != "Stone Target") {
+                            targetIsBlock = true;
+                        } else {
+                            targetIsBlock = false;
+                        }
+                        targetVisible = true;
 
-            targetVisible = false;
-            for (VuforiaTrackable trackable : allTrackables) {
-                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                    if (trackable.getName() != "Stone Target") {
-                        targetIsBlock = true;
-                    } else {
-                        targetIsBlock = false;
+                        // getUpdatedRobotLocation() will return null if no new information is available since
+                        // the last time that call was made, or if the trackable is not currently visible.
+                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                        if (robotLocationTransform != null) {
+                            lastLocation = robotLocationTransform;
+                        }
+                        break;
                     }
-                    targetVisible = true;
-
-                    // getUpdatedRobotLocation() will return null if no new information is available since
-                    // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                    if (robotLocationTransform != null) {
-                        lastLocation = robotLocationTransform;
-                    }
-                    break;
                 }
+
+                // Provide feedback as to where the robot is located (if we know).
+                if (targetVisible) {
+                    // express position (translation) of robot in inches.
+                    VectorF translation = lastLocation.getTranslation();
+                    vuforiaPos[0] = translation.get(0) / mmPerInch;
+                    vuforiaPos[1] = translation.get(1) / mmPerInch;
+                    vuforiaPos[2] = translation.get(2) / mmPerInch;
+
+                    // express the rotation of the robot in degrees.
+                    Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                    vuforiaRot[0] = rotation.firstAngle;
+                    vuforiaRot[1] = rotation.secondAngle;
+                    vuforiaRot[2] = rotation.thirdAngle;
+
+                }
+                vuforiaRun = vuforiaRun+1;
             }
-
-            // Provide feedback as to where the robot is located (if we know).
-            if (targetVisible) {
-                // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
-                vuforiaPos[0] = translation.get(0) / mmPerInch;
-                vuforiaPos[1] = translation.get(1) / mmPerInch;
-                vuforiaPos[2] = translation.get(2) / mmPerInch;
-
-                // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                vuforiaRot[0] = rotation.firstAngle;
-                vuforiaRot[1] = rotation.secondAngle;
-                vuforiaRot[2] = rotation.thirdAngle;
-
-
                 // Disable Tracking when we are done;
                 targetsSkyStone.deactivate();
 
+
             }
         }
-    }

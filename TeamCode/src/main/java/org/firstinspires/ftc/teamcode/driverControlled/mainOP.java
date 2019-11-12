@@ -30,8 +30,8 @@
 package org.firstinspires.ftc.teamcode.driverControlled;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.helpers.armDriver;
 import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
+import org.firstinspires.ftc.teamcode.helpers.motionController;
 import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
 /**
@@ -62,11 +63,18 @@ public class mainOP extends LinearOpMode {
 
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
+        driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        driveMotors[2].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        driveMotors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
+        //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
         //make the helper classes
         mecanumdriver mecanum = new mecanumdriver(driveMotors);
         armDriver grabberArm = new armDriver(armMotors, handServos);
+        //motionController motionController = new motionController(IMUs, driveMotors);
         DcMotor tiltMotor = armMotors[0];
         DcMotor linearMotor = armMotors[1];
         tiltMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -74,7 +82,7 @@ public class mainOP extends LinearOpMode {
         tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         telemetry.addData("Status", "initeded");
-        vuforia.vuforiaPosition(webcam0, cameraMonitorViewId);
+       // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
 
         waitForStart();
         while (!isStopRequested()) {
@@ -110,16 +118,19 @@ public class mainOP extends LinearOpMode {
             if(gamepad2.a) grabberArm.realse();
             if(gamepad2.b) grabberArm.grab();
 
-
-
+            //telemetry.addData("Vuforia Cycles:", "(%.2f)", vuforia.vuforiaRun );
             //debug stuff
-            //telemetry.addData("Vuforia", "(%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f)", vuforia.vuforiaPos[0], vuforia.vuforiaPos[1], vuforia.vuforiaPos[2], vuforia.vuforiaRot[0], vuforia.vuforiaRot[1], vuforia.vuforiaRot[2]);
+            //if(vuforia.vuforiaPos != null) {
+             //   telemetry.addData("Vuforia", "(%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f)", vuforia.vuforiaPos[0], vuforia.vuforiaPos[1], vuforia.vuforiaPos[2], vuforia.vuforiaRot[0], vuforia.vuforiaRot[1], vuforia.vuforiaRot[2]);
+            //}
             //end debug stuff
             //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
             // find the hertz of the control loop by using a timer
             double hertz = 1 / (runtime.time());
             telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
+            telemetry.update();
             runtime.reset(); //Reset the Timer
         }
+        vuforia.stopVuforia();
     }
 }
