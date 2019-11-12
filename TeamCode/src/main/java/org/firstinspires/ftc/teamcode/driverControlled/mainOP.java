@@ -63,28 +63,23 @@ public class mainOP extends LinearOpMode {
 
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
-        driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        driveMotors[2].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        driveMotors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        //driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //driveMotors[2].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //driveMotors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
+
         //make the helper classes
         mecanumdriver mecanum = new mecanumdriver(driveMotors);
         armDriver grabberArm = new armDriver(armMotors, handServos);
         //motionController motionController = new motionController(IMUs, driveMotors);
-        DcMotor tiltMotor = armMotors[0];
-        DcMotor linearMotor = armMotors[1];
-        tiltMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         telemetry.addData("Status", "initeded");
        // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
 
         waitForStart();
+
         while (!isStopRequested()) {
             double deadzone = .1; //The sticks must move more than this in order to actually count for anything
             //This reads the sticks and sets them to what they are
