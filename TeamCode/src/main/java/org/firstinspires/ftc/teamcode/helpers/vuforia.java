@@ -29,6 +29,10 @@
 
 package org.firstinspires.ftc.teamcode.helpers;
 
+import android.os.AsyncTask;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -78,8 +82,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * is explained below.
  */
 
-
-public class vuforia {
+private static class vuforiaParameters {
+    WebcamName webcamName;
+    int cameraMonitorViewId;
+        vuforiaParameters(WebcamName webcamName, int cameraMonitorViewId)
+}
+priv
+public class vuforia extends AsyncTask<vuforiaParameters, VectorF, >{
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     private static final boolean PHONE_IS_PORTRAIT = false;
@@ -139,7 +148,7 @@ public class vuforia {
     public void stopVuforia(){
 
     }
-    public void vuforiaPosition(WebcamName webcamName, int cameraMonitorViewId) {
+    public long doInBackground(WebcamName webcamName, int cameraMonitorViewId) {
             runVuforia = true;
             //the start of tha actual code
             /*
@@ -344,8 +353,9 @@ public class vuforia {
                         break;
                     }
                 }
-
+            }
                 // Provide feedback as to where the robot is located (if we know).
+            public void onProgressUpdate{
                 if (targetVisible) {
                     // express position (translation) of robot in inches.
                     VectorF translation = lastLocation.getTranslation();

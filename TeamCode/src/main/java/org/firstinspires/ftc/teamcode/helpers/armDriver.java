@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.helpers;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 public class armDriver {
     DcMotor linearMotor;
@@ -25,6 +26,7 @@ public class armDriver {
         wristServo = Sl[0];
         grabServo = Sl[1];
 
+        tiltMotor.setDirection(DcMotor.Direction.REVERSE);
         tiltMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -44,11 +46,11 @@ public class armDriver {
         }
     }
     public void grab() {
-        grabServo.setPosition(50);
+        grabServo.setPosition(0);
 
     }
     public void realse(){
-        grabServo.setPosition(80);
+        grabServo.setPosition(30);
 
     }
     public void grabberWrist(int wristPos){
