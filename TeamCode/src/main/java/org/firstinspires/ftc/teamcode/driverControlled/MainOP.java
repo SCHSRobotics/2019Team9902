@@ -36,9 +36,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+<<<<<<< Updated upstream:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/driverControlled/MainOP.java
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
+=======
+import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
+import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
+import org.firstinspires.ftc.teamcode.helpers.armDriver;
+import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
+import org.firstinspires.ftc.teamcode.helpers.motionController;
+>>>>>>> Stashed changes:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/driverControlled/mainOP.java
 
 /**
  Non Linear Main OP mode
@@ -49,16 +57,13 @@ import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 public class MainOP extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
-
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
-
-
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        //vuforia vuforia = new vuforia();
-
+        VuforiaParameters params = new VuforiaParameters(webcam0, cameraMonitorViewId);
+        new VuforiaNavigation().execute();
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

@@ -79,22 +79,15 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-class vuforiaParameters {
-    WebcamName webcamName;
-    int cameraMonitorViewId;
-    vuforiaParameters(WebcamName webcamName, int cameraMonitorViewId) {
-        this.webcamName = webcamName;
-        this.cameraMonitorViewId = cameraMonitorViewId;
-    }
-}
-class VuforiaNavigation extends AsyncTask<vuforiaParameters, VectorF[], String> {
+
+public class VuforiaNavigation extends AsyncTask<VuforiaParameters, VectorF[], String> {
     private VuforiaTrackables targetsSkyStone;
     private boolean targetVisible;
     private OpenGLMatrix lastLocation;
     private List<VuforiaTrackable> allTrackables;
 
 
-    protected void onPreExecute(vuforiaParameters... params) {
+    protected void onPreExecute(VuforiaParameters... params) {
        WebcamName webcamName = params[0].webcamName;
        int cameraMonitorViewId = params[0].cameraMonitorViewId;
 
@@ -323,7 +316,7 @@ class VuforiaNavigation extends AsyncTask<vuforiaParameters, VectorF[], String> 
        }
 
    }
-    protected String doInBackground(vuforiaParameters... params) {
+    protected String doInBackground(VuforiaParameters... params) {
         targetsSkyStone.activate();
         if (isCancelled()) {
             targetsSkyStone.deactivate();
