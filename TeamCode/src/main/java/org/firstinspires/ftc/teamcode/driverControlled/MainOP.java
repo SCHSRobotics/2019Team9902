@@ -114,11 +114,11 @@ public class MainOP extends LinearOpMode {
             if(gamepad2.b) grabberArm.grab();
 
             //
-            if(gamepad1.rightTrigger > 0) {
+            if(gamepad1.right_trigger > 0) {
                 intakeMotors[0].setPower(1);
                 intakeMotors[1].setPower(-1);
             }
-            else if(gamepad1.leftTrigger > 0) {
+            else if(gamepad1.left_trigger > 0) {
                 intakeMotors[0].setPower(-1);
                 intakeMotors[1].setPower(1);
             }
