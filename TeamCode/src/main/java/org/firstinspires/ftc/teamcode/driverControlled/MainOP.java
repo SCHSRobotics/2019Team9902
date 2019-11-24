@@ -36,17 +36,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-<<<<<<< Updated upstream:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/driverControlled/MainOP.java
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
-//import org.firstinspires.ftc.teamcode.helpers.vuforia;
-=======
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
-import org.firstinspires.ftc.teamcode.helpers.armDriver;
-import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
-import org.firstinspires.ftc.teamcode.helpers.motionController;
->>>>>>> Stashed changes:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/driverControlled/mainOP.java
+import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
+import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
+import org.firstinspires.ftc.teamcode.helpers.MotionController;
 
 /**
  Non Linear Main OP mode
@@ -129,6 +125,5 @@ public class MainOP extends LinearOpMode {
             telemetry.update();
             runtime.reset(); //Reset the Timer
         }
-        //vuforia.stopVuforia();
     }
 }
