@@ -51,6 +51,8 @@ public class AutoTest extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
+    ArmDriver grabberArm;
+
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
@@ -58,7 +60,7 @@ public class AutoTest extends LinearOpMode {
 
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        //vuforia vuforia = new vuforia();
+        //VuforiaNavigation vuforia = new VuforiaNavigation();
 
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
@@ -72,22 +74,36 @@ public class AutoTest extends LinearOpMode {
 
         //make the helper classes
         mecanum = new MecanumDriver(driveMotors);
-        ArmDriver grabberArm = new ArmDriver(armMotors, handServos);
+        grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
         // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
 
         waitForStart();
 
-        while (!isStopRequested()) {
+
 
            blockMove(true);
-           
-        }
 
-        //vuforia.stopVuforia();
+           Thread.sleep(1000);
+
+           blockMove(false);
+
+        // vuforia.stopVuforia();
     }
-    private void blockMove(boolean lift){
-        //mecanum.move
+    private void blockMove(boolean lift) {
+        final float targetHeight = 45.0f;
+        grabberArm.tiltArm(targetHeight);
+        if(lift)
+            grabberArm.release();
+        grabberArm.extend();
+        grabberArm.tiltArm(0);
+        if(lift)
+            grabberArm.grab();
+        else
+            grabberArm.release();
+        grabberArm.tiltArm(targetHeight);
+        grabberArm.retract();
+
     }
 }
