@@ -49,7 +49,7 @@ public class ArmDriver {
         grabServo.setPosition(0);
 
     }
-    public void relase(){
+    public void release(){
         grabServo.setPosition(30);
 
     }

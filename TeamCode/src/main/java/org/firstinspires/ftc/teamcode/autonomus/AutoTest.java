@@ -27,7 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.driverControlled;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -55,6 +56,8 @@ public class AutoTest extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
+    ArmDriver grabberArm;
+
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
@@ -78,15 +81,17 @@ public class AutoTest extends LinearOpMode {
 
         //make the helper classes
         mecanum = new MecanumDriver(driveMotors);
-        ArmDriver grabberArm = new ArmDriver(armMotors, handServos);
+        grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
 
         waitForStart();
 
-        while (!isStopRequested()) {
+
 
            blockMove(true);
+
+           Thread.sleep(1000);
             if(vn.translation != null) {
                 VectorF position = vn.translation;
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
@@ -94,12 +99,26 @@ public class AutoTest extends LinearOpMode {
             }
             if(vn.targetVisible==true) telemetry.addData("Target Acquired", ":)");
             else telemetry.addData("No target", ":(");
-           
+
         }
 
-        //vuforia.stopVuforia();
+           blockMove(false);
+
+        // vuforia.stopVuforia();
     }
-    private void blockMove(boolean lift){
-        //mecanum.move
+    private void blockMove(boolean lift) {
+        final float targetHeight = 45.0f;
+        grabberArm.tiltArm(targetHeight);
+        if(lift)
+            grabberArm.release();
+        grabberArm.extend();
+        grabberArm.tiltArm(0);
+        if(lift)
+            grabberArm.grab();
+        else
+            grabberArm.release();
+        grabberArm.tiltArm(targetHeight);
+        grabberArm.retract();
+
     }
 }

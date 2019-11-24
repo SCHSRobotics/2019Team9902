@@ -86,6 +86,8 @@ public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String
     private OpenGLMatrix lastLocation;
     private List<VuforiaTrackable> allTrackables;
 
+    private VuforiaTrackable[] visibleTargets;
+
 
     protected void onPreExecute(VuforiaParameters... params) {
        WebcamName webcamName = params[0].webcamName;
@@ -116,17 +118,6 @@ public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String
 
        // Constant for Stone Target
        final float stoneZ = 2.00f * mmPerInch;
-
-       // Constants for the center support targets
-       final float bridgeZ = 6.42f * mmPerInch;
-       final float bridgeY = 23 * mmPerInch;
-       final float bridgeX = 5.18f * mmPerInch;
-       final float bridgeRotY = 59;                                 // Units are degrees
-       final float bridgeRotZ = 180;
-
-       // Constants for perimeter targets
-       final float halfField = 72 * mmPerInch;
-       final float quadField = 36 * mmPerInch;
 
        // Class Members
        lastLocation = null;
@@ -170,34 +161,10 @@ public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String
 
        VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
        stoneTarget.setName("Stone Target");
-       VuforiaTrackable blueRearBridge = targetsSkyStone.get(1);
-       blueRearBridge.setName("Blue Rear Bridge");
-       VuforiaTrackable redRearBridge = targetsSkyStone.get(2);
-       redRearBridge.setName("Red Rear Bridge");
-       VuforiaTrackable redFrontBridge = targetsSkyStone.get(3);
-       redFrontBridge.setName("Red Front Bridge");
-       VuforiaTrackable blueFrontBridge = targetsSkyStone.get(4);
-       blueFrontBridge.setName("Blue Front Bridge");
-       VuforiaTrackable red1 = targetsSkyStone.get(5);
-       red1.setName("Red Perimeter 1");
-       VuforiaTrackable red2 = targetsSkyStone.get(6);
-       red2.setName("Red Perimeter 2");
-       VuforiaTrackable front1 = targetsSkyStone.get(7);
-       front1.setName("Front Perimeter 1");
-       VuforiaTrackable front2 = targetsSkyStone.get(8);
-       front2.setName("Front Perimeter 2");
-       VuforiaTrackable blue1 = targetsSkyStone.get(9);
-       blue1.setName("Blue Perimeter 1");
-       VuforiaTrackable blue2 = targetsSkyStone.get(10);
-       blue2.setName("Blue Perimeter 2");
-       VuforiaTrackable rear1 = targetsSkyStone.get(11);
-       rear1.setName("Rear Perimeter 1");
-       VuforiaTrackable rear2 = targetsSkyStone.get(12);
-       rear2.setName("Rear Perimeter 2");
 
        // For convenience, gather together all the trackable objects in one easily-iterable collection */
-       allTrackables = new ArrayList<VuforiaTrackable>();
-       allTrackables.addAll(targetsSkyStone);
+       //allTrackables = new ArrayList<VuforiaTrackable>();
+       //allTrackables.addAll(targetsSkyStone);
 
        /**
         * In order for localization to work, we need to tell the system where each target is on the field, and
@@ -224,55 +191,6 @@ public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String
                .translation(0, 0, stoneZ)
                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
-       //Set the position of the bridge support targets with relation to origin (center of field)
-       blueFrontBridge.setLocation(OpenGLMatrix
-               .translation(-bridgeX, bridgeY, bridgeZ)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, bridgeRotZ)));
-
-       blueRearBridge.setLocation(OpenGLMatrix
-               .translation(-bridgeX, bridgeY, bridgeZ)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -bridgeRotY, bridgeRotZ)));
-
-       redFrontBridge.setLocation(OpenGLMatrix
-               .translation(-bridgeX, -bridgeY, bridgeZ)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -bridgeRotY, 0)));
-
-       redRearBridge.setLocation(OpenGLMatrix
-               .translation(bridgeX, -bridgeY, bridgeZ)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, 0)));
-
-       //Set the position of the perimeter targets with relation to origin (center of field)
-       red1.setLocation(OpenGLMatrix
-               .translation(quadField, -halfField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-       red2.setLocation(OpenGLMatrix
-               .translation(-quadField, -halfField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-       front1.setLocation(OpenGLMatrix
-               .translation(-halfField, -quadField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-
-       front2.setLocation(OpenGLMatrix
-               .translation(-halfField, quadField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
-
-       blue1.setLocation(OpenGLMatrix
-               .translation(-quadField, halfField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-
-       blue2.setLocation(OpenGLMatrix
-               .translation(quadField, halfField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-
-       rear1.setLocation(OpenGLMatrix
-               .translation(halfField, quadField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
-
-       rear2.setLocation(OpenGLMatrix
-               .translation(halfField, -quadField, mmTargetHeight)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
        //
        // Create a transformation matrix describing where the phone is on the robot.
@@ -311,9 +229,9 @@ public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String
                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
 
        /**  Let all the trackable listeners know where the phone is.  */
-       for (VuforiaTrackable trackable : allTrackables) {
-           ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
-       }
+
+           ((VuforiaTrackableDefaultListener) stoneTarget.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+
 
    }
     protected String doInBackground(VuforiaParameters... params) {
@@ -326,23 +244,22 @@ public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String
     }
 
 
-    protected void onProgressUpdate(VectorF... progress){
-
+    protected int onProgressUpdate(VectorF... progress){
     // check all the trackable targets to see which one (if any) is visible.
                 targetVisible = false;
-                for (VuforiaTrackable trackable : allTrackables) {
-                    if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+
+                    if (((VuforiaTrackableDefaultListener) stoneTarget.getListener()).isVisible()) {
                         targetVisible = true;
 
                         // getUpdatedRobotLocation() will return null if no new information is available since
                         // the last time that call was made, or if the trackable is not currently visible.
-                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) stoneTarget.getListener()).getUpdatedRobotLocation();
                         if (robotLocationTransform != null) {
                             lastLocation = robotLocationTransform;
                         }
                         break;
                     }
-                }
+
 
                 // Provide feedback as to where the robot is located (if we know).
                 if (targetVisible) {
