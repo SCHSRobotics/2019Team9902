@@ -68,6 +68,7 @@ public class MainOP extends LinearOpMode {
         driveMotors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
+        DcMotor[] intakeMotors = {hardwareMap.dcMotor.get("intakeRight"), hardwareMap.dcMotor.get("intakeLeft")};
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
@@ -111,6 +112,16 @@ public class MainOP extends LinearOpMode {
             //grabber itself
             if(gamepad2.a) grabberArm.relase();
             if(gamepad2.b) grabberArm.grab();
+
+            //
+            if(gamepad1.rightTrigger > 0) {
+                intakeMotors[0].setPower(1);
+                intakeMotors[1].setPower(-1);
+            }
+            else if(gamepad1.leftTrigger > 0) {
+                intakeMotors[0].setPower(-1);
+                intakeMotors[1].setPower(1);
+            }
 
             //telemetry.addData("Vuforia Cycles:", "(%.2f)", vuforia.vuforiaRun );
             //debug stuff
