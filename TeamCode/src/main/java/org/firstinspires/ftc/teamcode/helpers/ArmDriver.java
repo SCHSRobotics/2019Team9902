@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.helpers;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-public class armDriver {
+public class ArmDriver {
     DcMotor linearMotor;
     DcMotor tiltMotor;
 
@@ -19,7 +19,7 @@ public class armDriver {
     //constants
     int wristTurnSpeed = 1;
     int armExtensionSpeed= 5;
-    public armDriver(DcMotor [] Ml, Servo [] Sl) {
+    public ArmDriver(DcMotor [] Ml, Servo [] Sl) {
         linearMotor = Ml[0];
         tiltMotor = Ml[1];
 
@@ -49,7 +49,7 @@ public class armDriver {
         grabServo.setPosition(0);
 
     }
-    public void realse(){
+    public void relase(){
         grabServo.setPosition(30);
 
     }

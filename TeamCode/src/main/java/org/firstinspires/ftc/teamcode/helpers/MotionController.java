@@ -4,10 +4,10 @@ import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class motionController {
+public class MotionController {
     AccelerationSensor imu0;
     AccelerationSensor imu1;
-    public motionController(AccelerationSensor[] I1, DcMotor[] M1){
+    public MotionController(AccelerationSensor[] I1, DcMotor[] M1){
         imu0 = I1[0];
         imu1 = I1[1];
         BNO055IMU.Parameters imu0p = new BNO055IMU.Parameters();

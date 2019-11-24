@@ -31,15 +31,14 @@ package org.firstinspires.ftc.teamcode.driverControlled;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.helpers.armDriver;
-import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
-import org.firstinspires.ftc.teamcode.helpers.motionController;
+import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
+import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
+//import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
 /**
  Non Linear Main OP mode
@@ -47,7 +46,7 @@ import org.firstinspires.ftc.teamcode.helpers.motionController;
  */
 
 @TeleOp(name="Main OP", group="LinearOPMode")
-public class mainOP extends LinearOpMode {
+public class MainOP extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
 
@@ -71,10 +70,12 @@ public class mainOP extends LinearOpMode {
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
-        mecanumdriver mecanum = new mecanumdriver(driveMotors);
-        armDriver grabberArm = new armDriver(armMotors, handServos);
-        //motionController motionController = new motionController(IMUs, driveMotors);
+        MecanumDriver mecanum = new MecanumDriver(driveMotors);
+        ArmDriver grabberArm = new ArmDriver(armMotors, handServos);
+        //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
+       // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
+
         waitForStart();
 
         while (!isStopRequested()) {
@@ -107,7 +108,7 @@ public class mainOP extends LinearOpMode {
             if(gamepad2.dpad_right) grabberArm.turnGrabberCW();
 
             //grabber itself
-            if(gamepad2.a) grabberArm.realse();
+            if(gamepad2.a) grabberArm.relase();
             if(gamepad2.b) grabberArm.grab();
 
             //telemetry.addData("Vuforia Cycles:", "(%.2f)", vuforia.vuforiaRun );
@@ -123,6 +124,6 @@ public class mainOP extends LinearOpMode {
             telemetry.update();
             runtime.reset(); //Reset the Timer
         }
-
+        //vuforia.stopVuforia();
     }
 }
