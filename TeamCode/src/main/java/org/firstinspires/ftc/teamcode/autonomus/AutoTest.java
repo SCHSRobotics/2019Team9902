@@ -27,8 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.driverControlled;
-
+package org.firstinspires.ftc.teamcode.autonomus;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -36,9 +35,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.MotionController;
+import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
+import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.mmPerInch;
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
 /**
@@ -55,10 +59,12 @@ public class AutoTest extends LinearOpMode {
         //make the helper classes
         telemetry.addData("Status", "Start init");
 
-
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        //vuforia vuforia = new vuforia();
+        VuforiaParameters params = new VuforiaParameters(webcam0, cameraMonitorViewId);
+        VuforiaNavigation vn = new VuforiaNavigation();
+        vn.onPreExecute(params);
+        vn.execute();
 
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
@@ -75,13 +81,19 @@ public class AutoTest extends LinearOpMode {
         ArmDriver grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
-        // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
 
         waitForStart();
 
         while (!isStopRequested()) {
 
            blockMove(true);
+            if(vn.translation != null) {
+                VectorF position = vn.translation;
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
+
+            }
+            if(vn.targetVisible==true) telemetry.addData("Target Acquired", ":)");
+            else telemetry.addData("No target", ":(");
            
         }
 
