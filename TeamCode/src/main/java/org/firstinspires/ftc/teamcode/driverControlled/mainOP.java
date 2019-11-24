@@ -40,7 +40,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.helpers.armDriver;
 import org.firstinspires.ftc.teamcode.helpers.mecanumdriver;
 import org.firstinspires.ftc.teamcode.helpers.motionController;
-//import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
 /**
  Non Linear Main OP mode
@@ -76,8 +75,6 @@ public class mainOP extends LinearOpMode {
         armDriver grabberArm = new armDriver(armMotors, handServos);
         //motionController motionController = new motionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
-       // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
-
         waitForStart();
 
         while (!isStopRequested()) {
@@ -126,6 +123,6 @@ public class mainOP extends LinearOpMode {
             telemetry.update();
             runtime.reset(); //Reset the Timer
         }
-        //vuforia.stopVuforia();
+
     }
 }
