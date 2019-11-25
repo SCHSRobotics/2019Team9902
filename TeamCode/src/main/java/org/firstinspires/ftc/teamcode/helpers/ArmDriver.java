@@ -70,16 +70,15 @@ public class ArmDriver {
         if (position < 500) {
            linearMotor.setTargetPosition(position);
            linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-           linearMotor.setPower(linearSpeed);
         }
     }
     public void extendArm() {
         armExtensionPosition = armExtensionPosition+armExtensionSpeed;
-        linearArm(armExtensionPosition);
+        linearMotor.setTargetPosition(armExtensionPosition);
     }
     public void retractArm(){
         armExtensionPosition = armExtensionPosition-armExtensionSpeed;
-        linearArm(armExtensionPosition);
+        linearMotor.setTargetPosition(armExtensionPosition);
     }
 
 }

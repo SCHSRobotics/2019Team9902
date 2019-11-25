@@ -43,11 +43,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.mmPerInch;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 /**
@@ -79,198 +81,206 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-
-public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], String> {
+public class VuforiaStone extends AsyncTask<VuforiaParameters, VectorF[], VectorF> {
     private VuforiaTrackables targetsSkyStone;
-    private boolean targetVisible;
     private OpenGLMatrix lastLocation;
     private List<VuforiaTrackable> allTrackables;
+    public VectorF translation;
+    public Orientation rotation;
+    public boolean targetVisible;
+    public void onPreExecute(VuforiaParameters... params) {
+        WebcamName webcamName = params[0].webcamName;
+        int cameraMonitorViewId = params[0].cameraMonitorViewId;
 
-    private VuforiaTrackable[] visibleTargets;
+        final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+        final boolean PHONE_IS_PORTRAIT = false;
 
+        /*
+         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+         * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+         * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+         * web site at https://developer.vuforia.com/license-manager.
+         *
+         * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+         * random data. As an example, here is a example of a fragment of a valid key:
+         *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+         * Once you've obtained a license key, copy the string from the Vuforia web site
+         * and paste it in to your code on the next line, between the double quotes.
+         */
+        final String VUFORIA_KEY =
+                "Abo0cgT/////AAABmbDm88xtoUF4mU6ziACe4Joq4soAB7QdoZtrGH22wU+0QIidhXCiCTqj5FbsU/dRJVkXE177O1PWZeAGEiD43rJS4He8f9/mqeF8nzEU4uS/kkf7bIkw2oafZImL15j+fuBlIvOdtSJlb4rPTn2oxiyMNzDWuJ7ovPXZP2rn1hbB2oRpmwTG6AgjQct9bsWBPF59Bohxy00iOz2OtUhoJOeWVlKseiO1qkQ6bS2c0qOAFgmYzfbpkssnRrtqZLyFS0JoIzdsHrr7DHUjV0kxlvNp8UJNXCbZrdNoPH1rTGaYjo7X3eZOCMmzJt7x886wvp5LWBdehe2H097KW8vVp4ooLshQ/sLuu2voA3sn4Aot";
 
-    protected void onPreExecute(VuforiaParameters... params) {
-       WebcamName webcamName = params[0].webcamName;
-       int cameraMonitorViewId = params[0].cameraMonitorViewId;
+        // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
+        // We will define some constants and conversions here
+        final float mmPerInch = 25.4f;
+        final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
-       final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-       final boolean PHONE_IS_PORTRAIT = false;
+        // Constant for Stone Target
+        final float stoneZ = 2.00f * mmPerInch;
 
-       /*
-        * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-        * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-        * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-        * web site at https://developer.vuforia.com/license-manager.
-        *
-        * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-        * random data. As an example, here is a example of a fragment of a valid key:
-        *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-        * Once you've obtained a license key, copy the string from the Vuforia web site
-        * and paste it in to your code on the next line, between the double quotes.
-        */
-       final String VUFORIA_KEY =
-               "Abo0cgT/////AAABmbDm88xtoUF4mU6ziACe4Joq4soAB7QdoZtrGH22wU+0QIidhXCiCTqj5FbsU/dRJVkXE177O1PWZeAGEiD43rJS4He8f9/mqeF8nzEU4uS/kkf7bIkw2oafZImL15j+fuBlIvOdtSJlb4rPTn2oxiyMNzDWuJ7ovPXZP2rn1hbB2oRpmwTG6AgjQct9bsWBPF59Bohxy00iOz2OtUhoJOeWVlKseiO1qkQ6bS2c0qOAFgmYzfbpkssnRrtqZLyFS0JoIzdsHrr7DHUjV0kxlvNp8UJNXCbZrdNoPH1rTGaYjo7X3eZOCMmzJt7x886wvp5LWBdehe2H097KW8vVp4ooLshQ/sLuu2voA3sn4Aot";
+        // Constants for the center support targets
+        final float bridgeZ = 6.42f * mmPerInch;
+        final float bridgeY = 23 * mmPerInch;
+        final float bridgeX = 5.18f * mmPerInch;
+        final float bridgeRotY = 59;                                 // Units are degrees
+        final float bridgeRotZ = 180;
 
-       // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
-       // We will define some constants and conversions here
-       final float mmPerInch = 25.4f;
-       final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+        // Constants for perimeter targets
+        final float halfField = 72 * mmPerInch;
+        final float quadField = 36 * mmPerInch;
 
-       // Constant for Stone Target
-       final float stoneZ = 2.00f * mmPerInch;
+        // Class Members
+        lastLocation = null;
+        VuforiaLocalizer vuforia = null;
 
-       // Class Members
-       lastLocation = null;
-       VuforiaLocalizer vuforia = null;
+        /**
+         * This is the webcam we are to use. As with other hardware devices such as motors and
+         * servos, this device is identified using the robot configuration tool in the FTC application.
+         */
 
-       /**
-        * This is the webcam we are to use. As with other hardware devices such as motors and
-        * servos, this device is identified using the robot configuration tool in the FTC application.
-        */
+        targetVisible = false;
+        float phoneXRotate = 0;
+        float phoneYRotate = 0;
+        float phoneZRotate = 0;
 
-       targetVisible = false;
-       float phoneXRotate = 0;
-       float phoneYRotate = 0;
-       float phoneZRotate = 0;
+        /*
+         * Retrieve the camera we are to use.
+         */
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
+         * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.useExtendedTracking = false;
+        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-       /*
-        * Retrieve the camera we are to use.
-        */
-       /*
-        * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-        * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
-        * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
-        */
-       VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
 
-       // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        /**
+         * We also indicate which camera on the RC we wish to use.
+         */
+        parameters.cameraName = webcamName;
 
-       parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-       /**
-        * We also indicate which camera on the RC we wish to use.
-        */
-       parameters.cameraName = webcamName;
-
-       //  Instantiate the Vuforia engine
-       vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-       // Load the data sets for the trackable objects. These particular data
-       // sets are stored in the 'assets' part of our application.
+        // Load the data sets for the trackable objects. These particular data
+        // sets are stored in the 'assets' part of our application.
         targetsSkyStone = vuforia.loadTrackablesFromAsset("Skystone");
 
-       VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
-       stoneTarget.setName("Stone Target");
-
-       // For convenience, gather together all the trackable objects in one easily-iterable collection */
-       //allTrackables = new ArrayList<VuforiaTrackable>();
-       //allTrackables.addAll(targetsSkyStone);
-
-       /**
-        * In order for localization to work, we need to tell the system where each target is on the field, and
-        * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
-        * Transformation matrices are a central, important concept in the math here involved in localization.
-        * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
-        * for detailed information. Commonly, you'll encounter transformation matrices as instances
-        * of the {@link OpenGLMatrix} class.
-        *
-        * If you are standing in the Red Alliance Station looking towards the center of the field,
-        *     - The X axis runs from your left to the right. (positive from the center to the right)
-        *     - The Y axis runs from the Red Alliance Station towards the other side of the field
-        *       where the Blue Alliance Station is. (Positive is from the center, towards the BlueAlliance station)
-        *     - The Z axis runs from the floor, upwards towards the ceiling.  (Positive is above the floor)
-        *
-        * Before being transformed, each target image is conceptually located at the origin of the field's
-        *  coordinate system (the center of the field), facing up.
-        */
-
-       // Set the position of the Stone Target.  Since it's not fixed in position, assume it's at the field origin.
-       // Rotated it to to face forward, and raised it to sit on the ground correctly.
-       // This can be used for generic target-centric approach algorithms
-       stoneTarget.setLocation(OpenGLMatrix
-               .translation(0, 0, stoneZ)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+        VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
+        stoneTarget.setName("Stone Target");
 
 
-       //
-       // Create a transformation matrix describing where the phone is on the robot.
-       //
-       // NOTE !!!!  It's very important that you turn OFF your phone's Auto-Screen-Rotation option.
-       // Lock it into Portrait for these numbers to work.
-       //
-       // Info:  The coordinate frame for the robot looks the same as the field.
-       // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
-       // Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
-       //
-       // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-       // pointing to the LEFT side of the Robot.
-       // The two examples below assume that the camera is facing forward out the front of the robot.
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsSkyStone);
 
-       // We need to rotate the camera around it's long axis to bring the correct camera forward.
-       if (CAMERA_CHOICE == BACK) {
-           phoneYRotate = -90;
-       } else {
-           phoneYRotate = 90;
-       }
+        /**
+         * In order for localization to work, we need to tell the system where each target is on the field, and
+         * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
+         * Transformation matrices are a central, important concept in the math here involved in localization.
+         * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
+         * for detailed information. Commonly, you'll encounter transformation matrices as instances
+         * of the {@link OpenGLMatrix} class.
+         *
+         * If you are standing in the Red Alliance Station looking towards the center of the field,
+         *     - The X axis runs from your left to the right. (positive from the center to the right)
+         *     - The Y axis runs from the Red Alliance Station towards the other side of the field
+         *       where the Blue Alliance Station is. (Positive is from the center, towards the BlueAlliance station)
+         *     - The Z axis runs from the floor, upwards towards the ceiling.  (Positive is above the floor)
+         *
+         * Before being transformed, each target image is conceptually located at the origin of the field's
+         *  coordinate system (the center of the field), facing up.
+         */
 
-       // Rotate the phone vertical about the X axis if it's in portrait mode
-       if (PHONE_IS_PORTRAIT) {
-           phoneXRotate = 90;
-       }
+        // Set the position of the Stone Target.  Since it's not fixed in position, assume it's at the field origin.
+        // Rotated it to to face forward, and raised it to sit on the ground correctly.
+        // This can be used for generic target-centric approach algorithms
+        // stoneTarget.setLocation(OpenGLMatrix.translation(0, 0, stoneZ).multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
-       // Next, translate the camera lens to where it is on the robot.
-       // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-       final float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
-       final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
-       final float CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
+        //Set the position of the bridge support targets with relation to origin (center of field)
+        stoneTarget.setLocation(OpenGLMatrix
+                .translation(-bridgeX, bridgeY, bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, bridgeRotZ)));
 
-       OpenGLMatrix robotFromCamera = OpenGLMatrix
-               .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-               .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+                //
+        // Create a transformation matrix describing where the phone is on the robot.
+        //
+        // NOTE !!!!  It's very important that you turn OFF your phone's Auto-Screen-Rotation option.
+        // Lock it into Portrait for these numbers to work.
+        //
+        // Info:  The coordinate frame for the robot looks the same as the field.
+        // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
+        // Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
+        //
+        // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
+        // pointing to the LEFT side of the Robot.
+        // The two examples below assume that the camera is facing forward out the front of the robot.
 
-       /**  Let all the trackable listeners know where the phone is.  */
-
-           ((VuforiaTrackableDefaultListener) stoneTarget.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
-
-
-   }
-    protected String doInBackground(VuforiaParameters... params) {
-        targetsSkyStone.activate();
-        if (isCancelled()) {
-            targetsSkyStone.deactivate();
-            return "done";
+        // We need to rotate the camera around it's long axis to bring the correct camera forward.
+        if (CAMERA_CHOICE == BACK) {
+            phoneYRotate = -90;
+        } else {
+            phoneYRotate = 90;
         }
+
+        // Rotate the phone vertical about the X axis if it's in portrait mode
+        if (PHONE_IS_PORTRAIT) {
+            phoneXRotate = 90;
+        }
+
+        // Next, translate the camera lens to where it is on the robot.
+        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+        final float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix robotFromCamera = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+
+        /**  Let all the trackable listeners know where the phone is.  */
+        for (VuforiaTrackable trackable : allTrackables) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+        }
+
+    }
+
+    protected VectorF doInBackground(VuforiaParameters... params) {
+        targetsSkyStone.activate();
+
+        while (!isCancelled()) {
+
+            targetVisible = false;
+            for (VuforiaTrackable trackable : allTrackables) {
+                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                    targetVisible = true;
+
+                    // getUpdatedRobotLocation() will return null if no new information is available since
+                    // the last time that call was made, or if the trackable is not currently visible.
+                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                    if (robotLocationTransform != null) {
+                        lastLocation = robotLocationTransform;
+                    }
+                    break;
+                }
+            }
+
+            // Provide feedback as to where the robot is located (if we know).
+            if (targetVisible) {
+                // express position (translation) of robot in inches.
+                translation = lastLocation.getTranslation();
+                rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                // express the rotation of the robot in degrees.
+            }
+        }
+        targetsSkyStone.deactivate();
         return null;
     }
 
 
-    protected int onProgressUpdate(VectorF... progress){
-    // check all the trackable targets to see which one (if any) is visible.
-                targetVisible = false;
-
-                    if (((VuforiaTrackableDefaultListener) stoneTarget.getListener()).isVisible()) {
-                        targetVisible = true;
-
-                        // getUpdatedRobotLocation() will return null if no new information is available since
-                        // the last time that call was made, or if the trackable is not currently visible.
-                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) stoneTarget.getListener()).getUpdatedRobotLocation();
-                        if (robotLocationTransform != null) {
-                            lastLocation = robotLocationTransform;
-                        }
-                        break;
-                    }
-
-
-                // Provide feedback as to where the robot is located (if we know).
-                if (targetVisible) {
-                    // express position (translation) of robot in inches.
-                    VectorF translation = lastLocation.getTranslation();
-                    progress[0] = lastLocation.getTranslation();
-                    // express the rotation of the robot in degrees.
-                    Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                } else {
-                }
-            }
-
-            // Disable Tracking when we are done;
-        }
+    protected void onProgressUpdate(VectorF... progress) {
+    }
+}

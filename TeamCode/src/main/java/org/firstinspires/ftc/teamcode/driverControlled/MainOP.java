@@ -53,13 +53,12 @@ import org.firstinspires.ftc.teamcode.helpers.MotionController;
 public class MainOP extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
+    private byte intakeDebounce = 0;
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaParameters params = new VuforiaParameters(webcam0, cameraMonitorViewId);
-        new VuforiaNavigation().execute();
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -69,6 +68,11 @@ public class MainOP extends LinearOpMode {
         Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
         DcMotor[] intakeMotors = {hardwareMap.dcMotor.get("intakeRight"), hardwareMap.dcMotor.get("intakeLeft")};
+        intakeMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        DcMotor linearMotor = hardwareMap.dcMotor.get("linearMotor");
+        linearMotor.setTargetPosition(0);
+        linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
@@ -79,7 +83,7 @@ public class MainOP extends LinearOpMode {
        // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
 
         waitForStart();
-
+        Boolean intakeOn = false;
         while (!isStopRequested()) {
             double deadzone = .1; //The sticks must move more than this in order to actually count for anything
             //This reads the sticks and sets them to what they are
@@ -98,30 +102,47 @@ public class MainOP extends LinearOpMode {
             // do the inputs stuff
 
             //linear acutator
-            if(gamepad2.left_bumper) grabberArm.extendArm();
-            if(gamepad2.right_bumper) grabberArm.retractArm();
+            if (gamepad2.left_bumper) grabberArm.extendArm();
+            if (gamepad2.right_bumper) grabberArm.retractArm();
 
             //tiltArm
-            if(gamepad2.left_trigger > 0) grabberArm.tiltArm(-gamepad2.left_trigger);
-            else if(gamepad2.right_trigger > 0) grabberArm.tiltArm(gamepad2.right_trigger);
+            if (gamepad2.left_trigger > 0) grabberArm.tiltArm(-gamepad2.left_trigger);
+            else if (gamepad2.right_trigger > 0) grabberArm.tiltArm(gamepad2.right_trigger);
 
             //Grabber Wrist
-            if(gamepad2.dpad_left) grabberArm.turnGrabberCCW();
-            if(gamepad2.dpad_right) grabberArm.turnGrabberCW();
+            if (gamepad2.dpad_left) grabberArm.turnGrabberCCW();
+            if (gamepad2.dpad_right) grabberArm.turnGrabberCW();
 
             //grabber itself
-            if(gamepad2.a) grabberArm.relase();
-            if(gamepad2.b) grabberArm.grab();
+            if (gamepad2.a) grabberArm.release();
+            if (gamepad2.b) grabberArm.grab();
 
             //
-            if(gamepad1.right_trigger > 0) {
+            if(gamepad1.right_bumper) {
+                intakeMotors[0].setPower(1);
+                intakeMotors[1].setPower(-1);
+            }else {
+                intakeMotors[0].setPower(0);
+                intakeMotors[1].setPower(0);
+            }
+            /*
+            if (gamepad1.right_bumper) {
+                if (intakeDebounce == 0){
+                    intakeOn = !intakeOn;
+                    intakeDebounce = 1;
+                }
+            }
+            if(intakeDebounce != 0) intakeDebounce++;
+
+            if(intakeOn){
+                intakeMotors[0].setPower(0);
+                intakeMotors[1].setPower(0);
+            }
+            else {
                 intakeMotors[0].setPower(1);
                 intakeMotors[1].setPower(-1);
             }
-            else if(gamepad1.left_trigger > 0) {
-                intakeMotors[0].setPower(-1);
-                intakeMotors[1].setPower(1);
-            }
+            */
 
             //telemetry.addData("Vuforia Cycles:", "(%.2f)", vuforia.vuforiaRun );
             //debug stuff

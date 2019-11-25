@@ -42,6 +42,7 @@ import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.MotionController;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
+import org.firstinspires.ftc.teamcode.helpers.VuforiaStone;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.mmPerInch;
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
@@ -65,10 +66,12 @@ public class AutoTest extends LinearOpMode {
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaParameters params = new VuforiaParameters(webcam0, cameraMonitorViewId);
-        VuforiaNavigation vn = new VuforiaNavigation();
-        vn.onPreExecute(params);
-        vn.execute();
-
+        //VuforiaNavigation vn = new VuforiaNavigation();
+        //vn.onPreExecute(params);
+        //vn.execute();
+        VuforiaStone vs = new VuforiaStone();
+        vs.onPreExecute(params);
+        vs.execute();
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -89,19 +92,48 @@ public class AutoTest extends LinearOpMode {
 
 
 
-           blockMove(true);
+           //blockMove(true);
 
-           Thread.sleep(1000);
-            if(vn.translation != null) {
-                VectorF position = vn.translation;
+           //Thread.sleep(1000);
+        //while (!isStopRequested()) {
+         boolean positionfound = false;
+         int counter = 0;
+
+         while(!positionfound){
+             counter++;
+             sleep(500);
+             telemetry.addData("counter", counter);
+             telemetry.update();
+             if(counter == 100){
+                 break;
+             }
+             if (vs.translation != null) {
+                VectorF position = vs.translation;
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
-
+                telemetry.update();
+                positionfound = true;
             }
-            if(vn.targetVisible==true) telemetry.addData("Target Acquired", ":)");
-            else telemetry.addData("No target", ":(");
+
+
+
+            //if (vs.targetVisible == true) {
+             //   telemetry.addData("Target Acquired", ":)");
+            //    telemetry.update();
+            //}
+            //else {
+            //    telemetry.addData("No target", ":(");
+            //}
+
 
         }
+         if(!positionfound) {
+             telemetry.addData("out of loop", "here");
+             telemetry.update();
+         }
+        vs.cancel(true);
+         while (!isStopRequested()){
 
+         }
            blockMove(false);
 
         // vuforia.stopVuforia();
@@ -111,14 +143,14 @@ public class AutoTest extends LinearOpMode {
         grabberArm.tiltArm(targetHeight);
         if(lift)
             grabberArm.release();
-        grabberArm.extend();
+        grabberArm.extendArm();
         grabberArm.tiltArm(0);
         if(lift)
             grabberArm.grab();
         else
             grabberArm.release();
         grabberArm.tiltArm(targetHeight);
-        grabberArm.retract();
+        grabberArm.retractArm();
 
     }
 }
