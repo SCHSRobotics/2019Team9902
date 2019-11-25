@@ -45,7 +45,7 @@ import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.MotionController;
 
 /**
- Non Linear Main OP mode
+ Non Linear Main OP modes
  Itmm 10/12/19 with plenty of code from sketchy hacker kid
  */
 
