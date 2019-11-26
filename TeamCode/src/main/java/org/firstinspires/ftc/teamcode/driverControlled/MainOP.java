@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
@@ -100,10 +101,15 @@ public class MainOP extends LinearOpMode {
             mecanum.mecanumpower(y, x, R);
 
             // do the inputs stuff
-
+           testController(telemetry);
             //linear acutator
-            if (gamepad2.left_bumper) grabberArm.extendArm();
-            if (gamepad2.right_bumper) grabberArm.retractArm();
+            if (gamepad2.right_stick_y > 0){
+                telemetry.addData("rightStick", "rightStick: (%.2f)", gamepad2.right_stick_y); //Show it to the user
+                telemetry.update();
+                grabberArm.extendArm();
+
+            }
+            if (gamepad2.right_stick_y < 0) grabberArm.retractArm();
 
             //tiltArm
             if (gamepad2.left_trigger > 0) grabberArm.tiltArm(-gamepad2.left_trigger);
@@ -153,9 +159,51 @@ public class MainOP extends LinearOpMode {
             //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
             // find the hertz of the control loop by using a timer
             double hertz = 1 / (runtime.time());
-            telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
-            telemetry.update();
+            //telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
+            //telemetry.update();
             runtime.reset(); //Reset the Timer
         }
+    }
+    public void testController(Telemetry telemetry){
+        if (gamepad2.right_stick_y != 0) {
+            telemetry.addData("rightStick", "rightStick Y: (%.2f)", gamepad2.right_stick_y); //Show it to the user
+            telemetry.update();
+        }
+        if (gamepad2.right_stick_x != 0) {
+            telemetry.addData("rightStick", "rightStick X: (%.2f)", gamepad2.right_stick_x); //Show it to the user
+            telemetry.update();
+        }
+        if (gamepad2.left_stick_y != 0) {
+            telemetry.addData("leftStick", "leftStick Y: (%.2f)", gamepad2.left_stick_y); //Show it to the user
+            telemetry.update();
+        }
+        if (gamepad2.left_stick_x != 0) {
+            telemetry.addData("leftStick", "leftStick X: (%.2f)", gamepad2.left_stick_x); //Show it to the user
+            telemetry.update();
+        }
+
+
+        if (gamepad2.left_trigger != 0) {
+            telemetry.addData("leftTrigger", "leftTrigger Y: (%.2f)", gamepad2.left_trigger); //Show it to the user
+            telemetry.update();
+        }
+        if (gamepad2.right_trigger != 0) {
+            telemetry.addData("rightTrigger", "rightTrigger X: (%.2f)", gamepad2.right_trigger); //Show it to the user
+            telemetry.update();
+        }
+
+        if (gamepad1.left_trigger != 0) {
+            telemetry.addData("leftTrigger", "leftTrigger pad1 Y: (%.2f)", gamepad1.right_stick_y); //Show it to the user
+            telemetry.update();
+        }
+        if (gamepad1.right_trigger != 0) {
+            telemetry.addData("rightTrigger", "rightTrigger pad1 X: (%.2f)", gamepad1.right_stick_y); //Show it to the user
+            telemetry.update();
+        }
+
+
+
+
+
     }
 }

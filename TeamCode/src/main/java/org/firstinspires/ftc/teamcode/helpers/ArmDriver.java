@@ -74,11 +74,11 @@ public class ArmDriver {
     }
     public void extendArm() {
         armExtensionPosition = armExtensionPosition+armExtensionSpeed;
-        linearMotor.setTargetPosition(armExtensionPosition);
+        linearArm(armExtensionPosition);
     }
     public void retractArm(){
         armExtensionPosition = armExtensionPosition-armExtensionSpeed;
-        linearMotor.setTargetPosition(armExtensionPosition);
+        linearArm(armExtensionPosition);
     }
 
 }
