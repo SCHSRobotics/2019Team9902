@@ -193,11 +193,11 @@ public class MainOP extends LinearOpMode {
         }
 
         if (gamepad1.left_trigger != 0) {
-            telemetry.addData("leftTrigger", "leftTrigger pad1 Y: (%.2f)", gamepad1.right_stick_y); //Show it to the user
+            telemetry.addData("leftTrigger", "leftTrigger pad1 Y: (%.2f)", gamepad1.left_trigger); //Show it to the user
             telemetry.update();
         }
         if (gamepad1.right_trigger != 0) {
-            telemetry.addData("rightTrigger", "rightTrigger pad1 X: (%.2f)", gamepad1.right_stick_y); //Show it to the user
+            telemetry.addData("rightTrigger", "rightTrigger pad1 X: (%.2f)", gamepad1.right_trigger); //Show it to the user
             telemetry.update();
         }
 
