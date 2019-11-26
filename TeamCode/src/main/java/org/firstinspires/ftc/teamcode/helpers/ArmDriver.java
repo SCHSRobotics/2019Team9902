@@ -16,6 +16,9 @@ public class ArmDriver {
 
     double linearSpeed = .8;
     double tiltSpeed = 1;
+
+    int tiltArmMax = 1467;
+    int armExtensionMax = 4800;
     //constants
     int wristTurnSpeed = 1;
     int armExtensionSpeed= 5;
@@ -36,14 +39,16 @@ public class ArmDriver {
 
 }
     public void tiltArm(float change) {
-        double rate = .1;
-        tiltArmPos = change*rate;
-        if((tiltArmPos < 500) && (tiltArmPos > 0)){ //Change this in order to set the stopping point
+        double rate = 1;
+        tiltArmPos += change*rate;
+        if((tiltArmPos < tiltArmMax) && (tiltArmPos > 0)){ //Change this in order to set the stopping point
             tiltMotor.setTargetPosition((int) tiltArmPos); //converts the double into an int
             tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             tiltMotor.setPower(tiltSpeed);
 
         }
+        if(tiltArmPos > tiltArmMax) tiltArmPos = tiltArmMax;
+        if(tiltArmPos < 0) tiltArmPos = 0;
     }
     public void grab() {
         grabServo.setPosition(0);
@@ -67,16 +72,19 @@ public class ArmDriver {
         grabberWrist(wristPos);
     }
     public void linearArm(int position) {
-        if (position < 500) {
+        if ((position < 50000) && (position > 0)){
            linearMotor.setTargetPosition(position);
            linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+           linearMotor.setPower(tiltSpeed);
         }
     }
     public void extendArm() {
+        if(armExtensionPosition > armExtensionMax) armExtensionPosition = armExtensionMax;
         armExtensionPosition = armExtensionPosition+armExtensionSpeed;
         linearArm(armExtensionPosition);
     }
     public void retractArm(){
+        if(armExtensionPosition < 0) armExtensionPosition = 0;
         armExtensionPosition = armExtensionPosition-armExtensionSpeed;
         linearArm(armExtensionPosition);
     }

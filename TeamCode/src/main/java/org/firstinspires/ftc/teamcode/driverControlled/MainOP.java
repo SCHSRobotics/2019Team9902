@@ -103,16 +103,21 @@ public class MainOP extends LinearOpMode {
             // do the inputs stuff
            testController(telemetry);
             //linear acutator
-            if (gamepad2.right_stick_y > 0){
+            if (gamepad2.right_stick_y < 0){
                 telemetry.addData("rightStick", "rightStick: (%.2f)", gamepad2.right_stick_y); //Show it to the user
                 telemetry.update();
                 grabberArm.extendArm();
 
             }
-            if (gamepad2.right_stick_y < 0) grabberArm.retractArm();
+            if (gamepad2.right_stick_y > 0) {
+                telemetry.addData("rightStick", "rightStick: (%.2f)", gamepad2.right_stick_y); //Show it to the user
+                telemetry.update();
+                grabberArm.retractArm();
+            }
 
             //tiltArm
-            if (gamepad2.left_trigger > 0) grabberArm.tiltArm(-gamepad2.left_trigger);
+            if (gamepad2.left_trigger > .5)
+                grabberArm.tiltArm(-gamepad2.left_trigger);
             else if (gamepad2.right_trigger > 0) grabberArm.tiltArm(gamepad2.right_trigger);
 
             //Grabber Wrist
