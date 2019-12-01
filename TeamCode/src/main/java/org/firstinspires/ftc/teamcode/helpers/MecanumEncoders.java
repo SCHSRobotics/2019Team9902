@@ -9,6 +9,7 @@ public class MecanumEncoders {
     DcMotor bl;
     DcMotor fr;
     DcMotor br;
+    double power = 1; // from 0 to 1
     double wheelDiameter = 100; //duh, in mm
     double strafeCoeff = .5; //how much slower the strafe is. Decimal Percentage.
     final float mmPerInch = 25.4f; //yoinked straight from vuforia
@@ -47,5 +48,9 @@ public class MecanumEncoders {
         fr.setTargetPosition((int)(frRT*encoderPerRev));
         bl.setTargetPosition((int)(blRT*encoderPerRev));
         br.setTargetPosition((int)(brRT*encoderPerRev));
+        fl.setPower(power);
+        fr.setPower(power);
+        bl.setPower(power);
+        br.setPower(power);
     }
 }

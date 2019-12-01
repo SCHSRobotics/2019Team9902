@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
+import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.MotionController;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
@@ -58,7 +59,7 @@ public class AutoTest extends LinearOpMode {
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
     ArmDriver grabberArm;
-
+    ClosedLoopDriving closedLoopDriver;
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
@@ -83,7 +84,7 @@ public class AutoTest extends LinearOpMode {
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
-        mecanum = new MecanumDriver(driveMotors);
+        closedLoopDriver = new ClosedLoopDriving(driveMotors);
         grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
@@ -115,6 +116,10 @@ public class AutoTest extends LinearOpMode {
             }
 
 
+             VectorF postiion = vs.translation;
+             float[] target = {5, 5};
+             float[] actual = {postiion.get(0), postiion.get(1)};
+             closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
 
             //if (vs.targetVisible == true) {
              //   telemetry.addData("Target Acquired", ":)");
