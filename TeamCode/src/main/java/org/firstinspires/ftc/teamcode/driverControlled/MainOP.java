@@ -98,7 +98,8 @@ public class MainOP extends LinearOpMode {
             if (Math.abs(x) < deadzone) x = 0;
             if (Math.abs(R) < 0) R = 0;
             // This calls the mecanum driver which does the magic sauce
-            mecanum.mecanumpower(y, x, R);
+            if(gamepad1.a) mecanum.mecanumpower(y/2, x/2, R/2);
+                else mecanum.mecanumpower(y, x, R);
 
             // do the inputs stuff
            testController(telemetry);

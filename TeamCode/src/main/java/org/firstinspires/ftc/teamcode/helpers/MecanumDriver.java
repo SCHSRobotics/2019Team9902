@@ -22,6 +22,12 @@ public class MecanumDriver {
          br = M1[3];
     }
     public void mecanumpower(float y, float x, float r) {
+        if(fl.getMode()!= DcMotor.RunMode.STOP_AND_RESET_ENCODER) {
+            fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         float flPWR = -(y - x + r);
         float blPWR = -(y + x + r);
         float frPWR = (y + x - r);
