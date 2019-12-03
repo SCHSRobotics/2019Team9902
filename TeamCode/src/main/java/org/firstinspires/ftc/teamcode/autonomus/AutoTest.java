@@ -59,6 +59,9 @@ public class AutoTest extends LinearOpMode {
     MecanumDriver mecanum;
     ArmDriver grabberArm;
     ClosedLoopDriving closedLoopDriver;
+    enum Position {
+        LEFT,RIGHT,CENTER,NOT_FOUND;
+    }
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
@@ -180,12 +183,12 @@ public class AutoTest extends LinearOpMode {
         boolean positionfound = false;
         int counter = 0;
 
-        while(!positionfound){
+        while(!positionfound) {
             counter++;
             sleep(500);
             telemetry.addData("counter", counter);
             telemetry.update();
-            if(counter == 100){
+            if (counter == 100) {
                 vs.cancel(true);
                 break;
             }
@@ -196,16 +199,14 @@ public class AutoTest extends LinearOpMode {
                 telemetry.update();
 
                 //vs.cancel(true);
-                //positionfound = true;
+                positionfound = true;
 
                 //return Position.CENTER;
                 //return position a, b, c
-                VectorF postiion = vs.translation;
-                float[] target = {5, 5};
-                float[] actual = {postiion.get(0), postiion.get(1)};
 
             }
 
+        }
 
             //closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
 
@@ -218,10 +219,16 @@ public class AutoTest extends LinearOpMode {
             //}
 
 
-        }
+
         if(!positionfound) {
             telemetry.addData("out of loop", "here");
             telemetry.update();
+
+        }
+        else{
+            VectorF postiion = vs.translation;
+            float[] target = {5, 5};
+            float[] actual = {postiion.get(0), postiion.get(1)};
 
         }
         vs.cancel(true);
