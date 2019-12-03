@@ -38,7 +38,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
+import org.firstinspires.ftc.teamcode.helpers.BaseGrabber;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
+import org.firstinspires.ftc.teamcode.helpers.StickDriver;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
@@ -79,6 +81,8 @@ public class MainOP extends LinearOpMode {
         //make the helper classes
         MecanumDriver mecanum = new MecanumDriver(driveMotors);
         ArmDriver grabberArm = new ArmDriver(armMotors, handServos);
+        BaseGrabber baseGrabber = new BaseGrabber(hardwareMap.servo.get("baseServo"));
+        StickDriver stickDriver = new StickDriver(hardwareMap.servo.get("stickServo"));
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
        // vuforia.vuforiaPosition(webcam0, cameraMonitorViewId); //this hangs the program on it.  Want to run in a background task
@@ -98,8 +102,12 @@ public class MainOP extends LinearOpMode {
             if (Math.abs(x) < deadzone) x = 0;
             if (Math.abs(R) < 0) R = 0;
             // This calls the mecanum driver which does the magic sauce
-            if(gamepad1.a) mecanum.mecanumpower(y/2, x/2, R/2);
-                else mecanum.mecanumpower(y, x, R);
+            if(gamepad1.a) {
+                mecanum.mecanumpower(y/2, x/2, R/2);
+            }
+            else {
+                mecanum.mecanumpower(y, x, R);
+            }
 
             // do the inputs stuff
            testController(telemetry);
@@ -122,12 +130,24 @@ public class MainOP extends LinearOpMode {
             else if (gamepad2.right_trigger > 0) grabberArm.tiltArm(gamepad2.right_trigger);
 
             //Grabber Wrist
-            if (gamepad2.dpad_left) grabberArm.turnGrabberCCW();
-            if (gamepad2.dpad_right) grabberArm.turnGrabberCW();
-
+            /*
+            if (gamepad2.dpad_left) {
+                grabberArm.turnGrabberCCW();
+            }
+            if (gamepad2.dpad_right) {
+                grabberArm.turnGrabberCW();
+            }*/
+            grabberArm.turnGrabber(gamepad2.left_stick_x);
+            telemetry.addLine("Servo");
+            telemetry.addData("Servo Position", grabberArm.wristPos);
+            telemetry.update();
             //grabber itself
-            if (gamepad2.a) grabberArm.release();
-            if (gamepad2.b) grabberArm.grab();
+            if (gamepad2.a) {
+                grabberArm.release();
+            }
+            if (gamepad2.b) {
+                grabberArm.grab();
+            }
 
             //
             if(gamepad1.right_bumper) {
@@ -136,6 +156,21 @@ public class MainOP extends LinearOpMode {
             }else {
                 intakeMotors[0].setPower(0);
                 intakeMotors[1].setPower(0);
+            }
+            if(gamepad1.dpad_up){
+                baseGrabber.realseBase();
+            }
+            if(gamepad1.dpad_down){
+                baseGrabber.grabBase();
+            }
+            if(gamepad1.dpad_left){
+                stickDriver.stickUp();
+            }
+            if(gamepad1.dpad_right){
+                stickDriver.stickDown();
+            }
+            if(gamepad1.left_bumper){
+                baseGrabber.grabberAllTheWayBack();
             }
             /*
             if (gamepad1.right_bumper) {

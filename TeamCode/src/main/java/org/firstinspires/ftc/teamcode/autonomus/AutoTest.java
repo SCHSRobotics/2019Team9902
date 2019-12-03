@@ -27,18 +27,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.driverControlled;
+package org.firstinspires.ftc.teamcode.autonomus;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
@@ -50,7 +48,6 @@ import org.firstinspires.ftc.teamcode.helpers.VuforiaStone;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.mmPerInch;
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
-
 /**
  Non Linear Main OP mode
  Itmm 10/12/19 with plenty of code from sketchy hacker kid
@@ -58,15 +55,10 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.m
 
 @TeleOp(name="AutoOP", group="LinearOPMode")
 public class AutoTest extends LinearOpMode {
-    private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
     ArmDriver grabberArm;
     ClosedLoopDriving closedLoopDriver;
-    enum Position
-    {
-        LEFT, CENTER, RIGHT,NOT_FOUND;
-    }
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
@@ -74,10 +66,12 @@ public class AutoTest extends LinearOpMode {
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaParameters params = new VuforiaParameters(webcam0, cameraMonitorViewId);
-        //VuforiaNavigation vn = new VuforiaNavigation();
-        //vn.onPreExecute(params);
-        //vn.execute();
-
+        VuforiaNavigation vn = new VuforiaNavigation();
+        vn.onPreExecute(params);
+        vn.execute();
+        VuforiaStone vs = new VuforiaStone();
+        vs.onPreExecute(params);
+        vs.execute();
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -93,9 +87,6 @@ public class AutoTest extends LinearOpMode {
         grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
-        VuforiaStone vs = new VuforiaStone();
-        vs.onPreExecute(params);
-        vs.execute();
 
         waitForStart();
 
@@ -119,11 +110,50 @@ public class AutoTest extends LinearOpMode {
         //mecanum.mecanumpower(0, 0, 0);
 
 
-        //blockMove(true);
+           //blockMove(true);
 
            //Thread.sleep(1000);
         //while (!isStopRequested()) {
+         boolean positionfound = false;
+         int counter = 0;
 
+         while(!positionfound){
+             counter++;
+             sleep(500);
+             telemetry.addData("counter", counter);
+             telemetry.update();
+             if(counter == 100){
+                 break;
+             }
+             if (vs.translation != null) {
+                VectorF position = vs.translation;
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
+                telemetry.update();
+                positionfound = true;
+            }
+
+
+             VectorF postiion = vs.translation;
+             float[] target = {18, 18};
+             //float[] actual = {postiion.get(0), postiion.get(1)};
+             float[] actual = {0, 0};
+             closedLoopDriver.closedLoopDriving(target, actual, false);
+
+            //if (vs.targetVisible == true) {
+             //   telemetry.addData("Target Acquired", ":)");
+            //    telemetry.update();
+            //}
+            //else {
+            //    telemetry.addData("No target", ":(");
+            //}
+
+
+        }
+         if(!positionfound) {
+             telemetry.addData("out of loop", "here");
+             telemetry.update();
+         }
+        vs.cancel(true);
          while (!isStopRequested()){
 
          }
