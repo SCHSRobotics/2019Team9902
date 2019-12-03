@@ -56,7 +56,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.m
  Itmm 10/12/19 with plenty of code from sketchy hacker kid
  */
 
-@TeleOp(name="Auto OP", group="LinearOPMode")
+@TeleOp(name="AutoOP", group="LinearOPMode")
 public class AutoTest extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
@@ -114,9 +114,9 @@ public class AutoTest extends LinearOpMode {
             //drive to not found
         }
 
-        mecanum.mecanumpower(0, .1f, 0);
-        sleep(100);
-        mecanum.mecanumpower(0, 0, 0);
+        //mecanum.mecanumpower(0, .1f, 0);
+        //sleep(100);
+        //mecanum.mecanumpower(0, 0, 0);
 
 
         //blockMove(true);
@@ -160,23 +160,24 @@ public class AutoTest extends LinearOpMode {
                 break;
             }
             if (vs.translation != null) {
-                VectorF position = vs.translation;
+                //VectorF position = vs.translation;
 
-                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", vs.translation.get(0) / mmPerInch, vs.translation.get(1) / mmPerInch, vs.translation.get(2) / mmPerInch);
                 telemetry.update();
 
-                vs.cancel(true);
-                positionfound = true;
+                //vs.cancel(true);
+                //positionfound = true;
 
-                return Position.CENTER;
+                //return Position.CENTER;
                 //return position a, b, c
+                VectorF postiion = vs.translation;
+                float[] target = {5, 5};
+                float[] actual = {postiion.get(0), postiion.get(1)};
+
             }
 
 
-            VectorF postiion = vs.translation;
-            float[] target = {5, 5};
-            float[] actual = {postiion.get(0), postiion.get(1)};
-            closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
+            //closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
 
             //if (vs.targetVisible == true) {
             //   telemetry.addData("Target Acquired", ":)");
