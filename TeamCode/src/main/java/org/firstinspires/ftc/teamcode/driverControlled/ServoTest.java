@@ -6,16 +6,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="ServoTest", group="Testing")
 public class ServoTest extends LinearOpMode {
-    double servoPosition = .93;
+    double servoPosition = .95;
     @Override
     public void runOpMode() {
-        Servo test = hardwareMap.servo.get("wristServo");
+        Servo test = hardwareMap.servo.get("grabServo");
         test.setDirection(Servo.Direction.FORWARD);
         waitForStart();
         while(!isStopRequested()) {
             //if(servoPosition < 181) {
                 if(gamepad1.a){
-                    servoPosition = .80;
+                    servoPosition = 0;
                     //servoPosition++;
 
                 }
@@ -23,7 +23,7 @@ public class ServoTest extends LinearOpMode {
             //if(servoPosition > 1) {
                 if(gamepad1.b) {
                     //servoPosition--;
-                    servoPosition = .93;
+                    servoPosition = .95;
 
                 }
             //}

@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.driverControlled;
+package org.firstinspires.ftc.teamcode.autonomus;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -55,7 +55,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.m
 
 @TeleOp(name="Auto OP", group="LinearOPMode")
 public class AutoTest extends LinearOpMode {
-    private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
     ArmDriver grabberArm;
@@ -67,9 +66,9 @@ public class AutoTest extends LinearOpMode {
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaParameters params = new VuforiaParameters(webcam0, cameraMonitorViewId);
-        //VuforiaNavigation vn = new VuforiaNavigation();
-        //vn.onPreExecute(params);
-        //vn.execute();
+        VuforiaNavigation vn = new VuforiaNavigation();
+        vn.onPreExecute(params);
+        vn.execute();
         VuforiaStone vs = new VuforiaStone();
         vs.onPreExecute(params);
         vs.execute();
@@ -117,9 +116,10 @@ public class AutoTest extends LinearOpMode {
 
 
              VectorF postiion = vs.translation;
-             float[] target = {5, 5};
-             float[] actual = {postiion.get(0), postiion.get(1)};
-             closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
+             float[] target = {18, 18};
+             //float[] actual = {postiion.get(0), postiion.get(1)};
+             float[] actual = {0, 0};
+             closedLoopDriver.closedLoopDriving(target, actual, false);
 
             //if (vs.targetVisible == true) {
              //   telemetry.addData("Target Acquired", ":)");
