@@ -32,11 +32,13 @@ package org.firstinspires.ftc.teamcode.driverControlled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
@@ -47,6 +49,7 @@ import org.firstinspires.ftc.teamcode.helpers.VuforiaStone;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.mmPerInch;
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
+
 
 /**
  Non Linear Main OP mode
@@ -60,6 +63,10 @@ public class AutoTest extends LinearOpMode {
     MecanumDriver mecanum;
     ArmDriver grabberArm;
     ClosedLoopDriving closedLoopDriver;
+    enum Position
+    {
+        LEFT, CENTER, RIGHT,NOT_FOUND;
+    }
     @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
@@ -70,9 +77,7 @@ public class AutoTest extends LinearOpMode {
         //VuforiaNavigation vn = new VuforiaNavigation();
         //vn.onPreExecute(params);
         //vn.execute();
-        VuforiaStone vs = new VuforiaStone();
-        vs.onPreExecute(params);
-        vs.execute();
+
 
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -88,54 +93,37 @@ public class AutoTest extends LinearOpMode {
         grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
+        VuforiaStone vs = new VuforiaStone();
+        vs.onPreExecute(params);
+        vs.execute();
 
         waitForStart();
 
+        Position p = blockRead(vs);
+
+        if (p == Position.LEFT){
+        //drive to left
+        }
+        else if (p == Position.RIGHT){
+            //drive to Right
+        }
+        else if (p == Position.CENTER){
+            //drive to center
+        }
+        else if (p == Position.NOT_FOUND){
+            //drive to not found
+        }
+
+        mecanum.mecanumpower(0, .1f, 0);
+        sleep(100);
+        mecanum.mecanumpower(0, 0, 0);
 
 
-           //blockMove(true);
+        //blockMove(true);
 
            //Thread.sleep(1000);
         //while (!isStopRequested()) {
-         boolean positionfound = false;
-         int counter = 0;
 
-         while(!positionfound){
-             counter++;
-             sleep(500);
-             telemetry.addData("counter", counter);
-             telemetry.update();
-             if(counter == 100){
-                 break;
-             }
-             if (vs.translation != null) {
-                VectorF position = vs.translation;
-                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
-                telemetry.update();
-                positionfound = true;
-            }
-
-
-             VectorF postiion = vs.translation;
-             float[] target = {5, 5};
-             float[] actual = {postiion.get(0), postiion.get(1)};
-             closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
-
-            //if (vs.targetVisible == true) {
-             //   telemetry.addData("Target Acquired", ":)");
-            //    telemetry.update();
-            //}
-            //else {
-            //    telemetry.addData("No target", ":(");
-            //}
-
-
-        }
-         if(!positionfound) {
-             telemetry.addData("out of loop", "here");
-             telemetry.update();
-         }
-        vs.cancel(true);
          while (!isStopRequested()){
 
          }
@@ -157,5 +145,55 @@ public class AutoTest extends LinearOpMode {
         grabberArm.tiltArm(targetHeight);
         grabberArm.retractArm();
 
+    }
+    private Position blockRead(VuforiaStone vs){
+        boolean positionfound = false;
+        int counter = 0;
+
+        while(!positionfound){
+            counter++;
+            sleep(500);
+            telemetry.addData("counter", counter);
+            telemetry.update();
+            if(counter == 100){
+                vs.cancel(true);
+                break;
+            }
+            if (vs.translation != null) {
+                VectorF position = vs.translation;
+
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
+                telemetry.update();
+
+                vs.cancel(true);
+                positionfound = true;
+
+                return Position.CENTER;
+                //return position a, b, c
+            }
+
+
+            VectorF postiion = vs.translation;
+            float[] target = {5, 5};
+            float[] actual = {postiion.get(0), postiion.get(1)};
+            closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
+
+            //if (vs.targetVisible == true) {
+            //   telemetry.addData("Target Acquired", ":)");
+            //    telemetry.update();
+            //}
+            //else {
+            //    telemetry.addData("No target", ":(");
+            //}
+
+
+        }
+        if(!positionfound) {
+            telemetry.addData("out of loop", "here");
+            telemetry.update();
+
+        }
+        vs.cancel(true);
+        return Position.NOT_FOUND;
     }
 }
