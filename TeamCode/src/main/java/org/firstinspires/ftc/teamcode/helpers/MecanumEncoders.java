@@ -10,7 +10,7 @@ public class MecanumEncoders {
     DcMotor fr;
     DcMotor br;
     double power = 1; // from 0 to 1
-    double wheelDiameter = 100; //duh, in mm
+    double wheelDiameter = 100; //selfexplanitory, in mm
     double strafeCoeff = .5; //how much slower the strafe is. Decimal Percentage.
     final float mmPerInch = 25.4f; //yoinked straight from vuforia
     double encoderPerRev = 95.9; //either 95.9 or 383.6

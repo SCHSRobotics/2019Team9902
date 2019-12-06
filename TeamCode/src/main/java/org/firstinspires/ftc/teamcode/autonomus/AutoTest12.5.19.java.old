@@ -29,34 +29,17 @@
 
 package org.firstinspires.ftc.teamcode.autonomus;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
-import org.firstinspires.ftc.teamcode.helpers.MotionController;
-import org.firstinspires.ftc.teamcode.helpers.Position;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
-import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaStone;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.firstinspires.ftc.teamcode.helpers.Position.position.CENTER;
-import static org.firstinspires.ftc.teamcode.helpers.Position.position.LEFT;
-import static org.firstinspires.ftc.teamcode.helpers.Position.position.NOT_FOUND;
-import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
-
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
 
 /**
@@ -64,20 +47,21 @@ import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
  Itmm 10/12/19 with plenty of code from sketchy hacker kid
  */
 
-@Autonomous(name="AutoOP", group="Testing")
-public class AutoTest extends LinearOpMode {
+@TeleOp(name="AutoOP", group="LinearOPMode")
+public class AutoTestOLD extends LinearOpMode {
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
     ArmDriver grabberArm;
     ClosedLoopDriving closedLoopDriver;
-    public int posOffset = 0; //The block positioning offset that we have. this will be different for different starting points
-
-    @Override
-    public void runOpMode() {
+    public enum Position {
+        LEFT,RIGHT,CENTER,NOT_FOUND;
+    }
+    @Override public void runOpMode() {
         //make the helper classes
         telemetry.addData("Status", "Start init");
+
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
-        VuforiaNavigation vn = new VuforiaNavigation();
+        VuforiaNavigation vn =  new VuforiaNavigation();
         VuforiaStone vs = new VuforiaStone();
         vs.execute(webcam0);
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
@@ -97,35 +81,145 @@ public class AutoTest extends LinearOpMode {
 
         waitForStart();
 
-        Position.position p = vs.stonePos;
+        Position p = vs.stonePos;
 
-        if (p == LEFT) {
-            //drive to left
-        } else if (p == RIGHT) {
+        if (p == Position.LEFT){
+        //drive to left
+        }
+        else if (p == Position.RIGHT){
             //drive to Right
-        } else if (p == CENTER) {
+        }
+        else if (p == Position.CENTER){
             //drive to center
-        } else if (p == NOT_FOUND) {
+        }
+        else if (p == Position.NOT_FOUND){
             //drive to not found
         }
         vs.cancel(true);
         vn.execute(webcam0);
+        //mecanum.mecanumpower(0, .1f, 0);
+        //sleep(100);
+        //mecanum.mecanumpower(0, 0, 0);
+
+
+           //blockMove(true);
+
+           //Thread.sleep(1000);
+        //while (!isStopRequested()) {
+         boolean positionfound = false;
+         int counter = 0;
+
+         /*while(!positionfound){
+             counter++;
+             sleep(500);
+             telemetry.addData("counter", counter);
+             telemetry.update();
+             if(counter == 100){
+                 break;
+             }
+             if (vs.translation != null) {
+                VectorF position = vs.translation;
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", position.get(0) / mmPerInch, position.get(1) / mmPerInch, position.get(2) / mmPerInch);
+                telemetry.update();
+                positionfound = true;
+            }
+
+
+             VectorF postiion = vs.translation;
+             float[] target = {18, 18};
+             //float[] actual = {postiion.get(0), postiion.get(1)};
+             float[] actual = {0, 0};
+             closedLoopDriver.closedLoopDriving(target, actual, false);
+*/
+            //if (vs.targetVisible == true) {
+             //   telemetry.addData("Target Acquired", ":)");
+            //    telemetry.update();
+            //}
+            //else {
+            //    telemetry.addData("No target", ":(");
+            //}
+
+
+        }
+         if(!positionfound) {
+             telemetry.addData("out of loop", "here");
+             telemetry.update();
+         }
+        vs.cancel(true);
+         while (!isStopRequested()){
+
+         }
+           blockMove(false);
+
+        // vuforia.stopVuforia();
     }
-    private void blockMove(boolean lift){
+    private void blockMove(boolean lift) {
         final float targetHeight = 45.0f;
         grabberArm.tiltArm(targetHeight);
-        if (lift) {
+        if(lift)
             grabberArm.release();
-            grabberArm.extendArm();
-            grabberArm.tiltArm(0);
-        }
-        if (lift) {
+        grabberArm.extendArm();
+        grabberArm.tiltArm(0);
+        if(lift)
             grabberArm.grab();
-        }
-        else {
+        else
             grabberArm.release();
-            grabberArm.tiltArm(targetHeight);
-            grabberArm.retractArm();
-        }
+        grabberArm.tiltArm(targetHeight);
+        grabberArm.retractArm();
+
     }
-}
+    /*private Position blockRead(VuforiaStone vs){
+        boolean positionfound = false;
+        int counter = 0;
+
+        while(!positionfound) {
+            counter++;
+            sleep(500);
+            telemetry.addData("counter", counter);
+            telemetry.update();
+            if (counter == 100) {
+                vs.cancel(true);
+                break;
+            }
+            if (vs.translation != null) {
+                //VectorF position = vs.translation;
+
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", vs.translation.get(0) / mmPerInch, vs.translation.get(1) / mmPerInch, vs.translation.get(2) / mmPerInch);
+                telemetry.update();
+
+                //vs.cancel(true);
+                positionfound = true;
+
+                //return Position.CENTER;
+                //return position a, b, c
+
+            }
+
+        }*/
+
+            //closedLoopDriver.closedLoopDriving(target, actual, vs.targetVisible);
+
+            //if (vs.targetVisible == true) {
+            //   telemetry.addData("Target Acquired", ":)");
+            //    telemetry.update();
+            //}
+            //else {
+            //    telemetry.addData("No target", ":(");
+            //}
+
+
+
+        /*if(!positionfound) {
+            telemetry.addData("out of loop", "here");
+            telemetry.update();
+
+        }
+        else{
+            VectorF postiion = vs.translation;
+            float[] target = {5, 5};
+            float[] actual = {postiion.get(0), postiion.get(1)};
+
+        }
+        vs.cancel(true);
+        return Position.NOT_FOUND; */
+    }

@@ -80,17 +80,14 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-public class VuforiaNavigation extends AsyncTask<VuforiaParameters, VectorF[], VectorF> {
+public class VuforiaNavigation extends AsyncTask<WebcamName, VectorF[], VectorF> {
     private VuforiaTrackables targetsSkyStone;
     private OpenGLMatrix lastLocation;
     private List<VuforiaTrackable> allTrackables;
     public VectorF translation;
     public Orientation rotation;
     public boolean targetVisible;
-    public void onPreExecute(VuforiaParameters... params) {
-        WebcamName webcamName = params[0].webcamName;
-        int cameraMonitorViewId = params[0].cameraMonitorViewId;
-
+    protected void onPreExecute(WebcamName webcamName) {
         final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
         final boolean PHONE_IS_PORTRAIT = false;
 
@@ -150,10 +147,10 @@ public class VuforiaNavigation extends AsyncTask<VuforiaParameters, VectorF[], V
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
          * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
          */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.useExtendedTracking = false;
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        parameters.useExtendedTracking = false;
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
 
         /**
@@ -315,7 +312,7 @@ public class VuforiaNavigation extends AsyncTask<VuforiaParameters, VectorF[], V
 
     }
 
-    protected VectorF doInBackground(VuforiaParameters... params) {
+    protected VectorF doInBackground(WebcamName... webcamName) {
         targetsSkyStone.activate();
         while (!isCancelled()) {
         targetVisible = false;

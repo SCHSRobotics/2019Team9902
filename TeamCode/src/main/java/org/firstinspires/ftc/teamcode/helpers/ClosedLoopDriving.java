@@ -7,6 +7,7 @@ public class ClosedLoopDriving {
     MecanumEncoders mecanumEncoders;
     MiniPID pidX;
     MiniPID pidY;
+    double rotation;
     public ClosedLoopDriving(DcMotor [] M1){
         mecanum = new MecanumDriver(M1);
         mecanumEncoders = new MecanumEncoders(M1);
