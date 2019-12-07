@@ -28,10 +28,10 @@ public class MecanumDriver {
             bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-        float flPWR = -(y - x + r);
-        float blPWR = -(y + x + r);
-        float frPWR = (y + x - r);
-        float brPWR = (y - x - r);
+        float flPWR = (y - x + r);
+        float blPWR = (y + x + r);
+        float frPWR = -(y + x - r);
+        float brPWR = -(y - x - r);
         fl.setPower(flPWR);
         bl.setPower(blPWR);
         fr.setPower(frPWR);

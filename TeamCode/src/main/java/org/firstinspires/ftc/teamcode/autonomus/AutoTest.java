@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.autonomus;
 
+import android.os.AsyncTask;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -66,6 +68,7 @@ import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
 
 @Autonomous(name="AutoOP", group="Testing")
 public class AutoTest extends LinearOpMode {
+    public int cameraMonitorViewId;
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
     ArmDriver grabberArm;
@@ -74,12 +77,14 @@ public class AutoTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         //make the helper classes
         telemetry.addData("Status", "Start init");
         WebcamName webcam0 = hardwareMap.get(WebcamName.class, "Webcam 1");
         VuforiaNavigation vn = new VuforiaNavigation();
         VuforiaStone vs = new VuforiaStone();
-        vs.execute(webcam0);
+        vs.setup(webcam0);
+        //vn.setup(webcam0);
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -95,21 +100,31 @@ public class AutoTest extends LinearOpMode {
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
 
+
+
+        telemetry.addLine("Position");
+        vs.execute(webcam0);
         waitForStart();
-
-        Position.position p = vs.stonePos;
-
-        if (p == LEFT) {
-            //drive to left
-        } else if (p == RIGHT) {
-            //drive to Right
-        } else if (p == CENTER) {
-            //drive to center
-        } else if (p == NOT_FOUND) {
-            //drive to not found
+        while(!isStopRequested()) {
+            telemetry.addLine("Position");
+            Position.position p = vs.stonePos;
+            if (p == LEFT) {
+                telemetry.addData("Position Left", vs.tStoneX);
+                //drive to left
+            } else if (p == RIGHT) {
+                telemetry.addData("Position Right", vs.tStoneX);
+                //drive to Right
+            } else if (p == CENTER) {
+                telemetry.addData("Position Center", vs.tStoneX);
+                //drive to center
+            } else if (p == NOT_FOUND) {
+                telemetry.addData("Position NF", vs.tStoneX);
+                //drive to not found
+            }
+            telemetry.update();
         }
         vs.cancel(true);
-        vn.execute(webcam0);
+        //vn.execute(webcam0);
     }
     private void blockMove(boolean lift){
         final float targetHeight = 45.0f;

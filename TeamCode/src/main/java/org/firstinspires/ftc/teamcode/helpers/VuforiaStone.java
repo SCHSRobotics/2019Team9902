@@ -85,30 +85,31 @@ import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
  * is explained below.
  */
 public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
+    //delete this later
+    AutoTest autoTest = new AutoTest(); //DELETE
     //dividing line
     int line1 = 1;
     int line2 = 2;
     public boolean stoneFound = false;
     public Position.position stonePos;
     public int stoneNum = 0;
-    double tStoneX;
+    public double tStoneX;
     double tStoneY;
     double tStoneZ;
     private VuforiaTrackables targets;
     private VuforiaTrackable stoneTarget;
     public boolean targetVisible;
-    protected Void onPreExecute(WebcamName webcamName) {
+    public void setup(WebcamName webcamName) {
         final String VUFORIA_KEY =
                 "Abo0cgT/////AAABmbDm88xtoUF4mU6ziACe4Joq4soAB7QdoZtrGH22wU+0QIidhXCiCTqj5FbsU/dRJVkXE177O1PWZeAGEiD43rJS4He8f9/mqeF8nzEU4uS/kkf7bIkw2oafZImL15j+fuBlIvOdtSJlb4rPTn2oxiyMNzDWuJ7ovPXZP2rn1hbB2oRpmwTG6AgjQct9bsWBPF59Bohxy00iOz2OtUhoJOeWVlKseiO1qkQ6bS2c0qOAFgmYzfbpkssnRrtqZLyFS0JoIzdsHrr7DHUjV0kxlvNp8UJNXCbZrdNoPH1rTGaYjo7X3eZOCMmzJt7x886wvp5LWBdehe2H097KW8vVp4ooLshQ/sLuu2voA3sn4Aot";
-        VuforiaLocalizer vuforia = null;
-        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(autoTest.cameraMonitorViewId);
 
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraName = webcamName;
 
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        VuforiaLocalizer vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
@@ -116,7 +117,6 @@ public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
 
         stoneTarget = this.targets.get(0);
         stoneTarget.setName("Stone Target");
-        return null;
     }
 
     protected Void doInBackground(WebcamName... webcamName){

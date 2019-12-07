@@ -87,7 +87,7 @@ public class VuforiaNavigation extends AsyncTask<WebcamName, VectorF[], VectorF>
     public VectorF translation;
     public Orientation rotation;
     public boolean targetVisible;
-    protected void onPreExecute(WebcamName webcamName) {
+    public void setup(WebcamName webcamName) {
         final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
         final boolean PHONE_IS_PORTRAIT = false;
 
