@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -72,7 +73,7 @@ public class AutoTest extends LinearOpMode {
     public int cameraMonitorViewId;
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
-    MecanumEncoders mecanumEncoders;
+    MecanumEncoders mecanumEncoder;
     ArmDriver grabberArm;
     ClosedLoopDriving closedLoopDriver;
     public int posOffset = 0; //The block positioning offset that we have. this will be different for different starting points
@@ -88,7 +89,7 @@ public class AutoTest extends LinearOpMode {
         vs.setup(webcam0);
         //vn.setup(webcam0);
         Servo releaseServo = hardwareMap.servo.get("releaseServo");
-        DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
+        DcMotorEx[] driveMotors = {(DcMotorEx) hardwareMap.dcMotor.get("fl"), (DcMotorEx) hardwareMap.dcMotor.get("fr"), (DcMotorEx) hardwareMap.dcMotor.get("bl"), (DcMotorEx) hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[2].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -98,43 +99,53 @@ public class AutoTest extends LinearOpMode {
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
-        mecanumEncoders = new MecanumEncoders(driveMotors);
+        mecanumEncoder = new MecanumEncoders(driveMotors);
+        mecanumEncoder.mecanumEncoders(0, 0, 0);
         closedLoopDriver = new ClosedLoopDriving(driveMotors);
         grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
 
 
-
         telemetry.addLine("Position");
         vs.execute(webcam0);
 
-        while(!isStarted()) {
-            telemetry.addLine("Position");
-            Position.position p = vs.stonePos;
-           // if (p == LEFT) {
-            if(true){
-                telemetry.addData("Position Left", vs.tStoneX);
-                //drive to left
-            } else if (p == RIGHT) {
-                telemetry.addData("Position Right", vs.tStoneX);
-                //drive to Right
-            } else if (p == CENTER) {
-                telemetry.addData("Position Center", vs.tStoneX);
-                //drive to center
-            } else if (p == NOT_FOUND) {
-                telemetry.addData("Position NF", vs.tStoneX);
-                //drive to not found
-            }
+        while (!isStarted()) {
+            telemetry.addData("Position", vs.tStoneX);
             telemetry.update();
         }
         waitForStart();
+        Position.position p = vs.stonePos;
+        mecanumEncoder.mecanumEncoders(10, 0, 0);
+        sleep(750);
+        mecanumEncoder.mecanumEncoders(0, -8, 0);
+        sleep(1750);
+        mecanumEncoder.mecanumEncoders(0, -5, 0);
+        grabberArm.tiltArm(100);
+        grabberArm.linearArm(50);
+        if (p == LEFT) {
+            telemetry.addData("Position Left", vs.tStoneX);
+            //mecanumEncoder.mecanumEncoders(0, 0, -45);
+            //drive to left
+        } else if (p == RIGHT) {
+            telemetry.addData("Position Right", vs.tStoneX);
+            //mecanumEncoder.mecanumEncoders(0, 0, 45);
+            //drive to Right
+        } else if (p == CENTER) {
+            telemetry.addData("Position Center", vs.tStoneX);
+            //drive to center
+        } else if (p == NOT_FOUND) {
+            telemetry.addData("Position NF", vs.tStoneX);
+            //drive to not found
+        }
+
         releaseServo.setPosition(.7);
         sleep(10000);
         vs.cancel(true);
         //vn.execute(webcam0);
     }
-    private void blockMove(boolean lift){
+
+    private void blockMove(boolean lift) {
         final float targetHeight = 45.0f;
         grabberArm.tiltArm(targetHeight);
         if (lift) {
@@ -144,11 +155,16 @@ public class AutoTest extends LinearOpMode {
         }
         if (lift) {
             grabberArm.grab();
-        }
-        else {
+        } else {
             grabberArm.release();
             grabberArm.tiltArm(targetHeight);
             grabberArm.retractArm();
+        }
+    }
+
+    private void waitForReady() {
+        while (!mecanumEncoder.ready) {
+            sleep(10);
         }
     }
 }

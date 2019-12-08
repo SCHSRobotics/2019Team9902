@@ -101,7 +101,7 @@ public class MainOP extends LinearOpMode {
             if (Math.abs(x) < deadzone) x = 0;
             if (Math.abs(R) < 0) R = 0;
             // This calls the mecanum driver which does the magic sauce
-            if(gamepad1.a) {
+            if(gamepad1.right_trigger != 0) {
                 mecanum.mecanumpower(y/2, x/2, R/2);
             }
             else {
@@ -109,7 +109,7 @@ public class MainOP extends LinearOpMode {
             }
 
             // do the inputs stuff
-           testController(telemetry);
+           //testController(telemetry);
             //linear acutator
             if (gamepad2.right_stick_y < 0){
                  grabberArm.extendArm();
@@ -123,14 +123,7 @@ public class MainOP extends LinearOpMode {
             if (gamepad2.left_stick_y > 0) {
                 grabberArm.tiltArm(gamepad2.left_stick_y);
             }
-            //Grabber Wrist
-            /*
-            if (gamepad2.dpad_left) {
-                grabberArm.turnGrabberCCW();
-            }
-            if (gamepad2.dpad_right) {
-                grabberArm.turnGrabberCW();
-            }*/
+
             grabberArm.turnGrabber(gamepad2.left_stick_x);
             telemetry.addLine("Servo");
             telemetry.addData("Servo Position", grabberArm.wristPos);
@@ -166,33 +159,6 @@ public class MainOP extends LinearOpMode {
             if(gamepad1.left_bumper){
                 baseGrabber.grabberAllTheWayBack();
             }
-            /*
-            if (gamepad1.right_bumper) {
-                if (intakeDebounce == 0){
-                    intakeOn = !intakeOn;
-                    intakeDebounce = 1;
-                }
-            }
-            if(intakeDebounce != 0) intakeDebounce++;
-
-            if(intakeOn){
-                intakeMotors[0].setPower(0);
-                intakeMotors[1].setPower(0);
-            }
-            else {
-                intakeMotors[0].setPower(1);
-                intakeMotors[1].setPower(-1);
-            }
-            */
-
-            //telemetry.addData("Vuforia Cycles:", "(%.2f)", vuforia.vuforiaRun );
-            //debug stuff
-            //if(vuforia.vuforiaPos != null) {
-             //   telemetry.addData("Vuforia", "(%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f), (%.2f)", vuforia.vuforiaPos[0], vuforia.vuforiaPos[1], vuforia.vuforiaPos[2], vuforia.vuforiaRot[0], vuforia.vuforiaRot[1], vuforia.vuforiaRot[2]);
-            //}
-            //end debug stuff
-            //everything below here to the end of the loop should just be hertz calculation stuff for performance measurement
-            // find the hertz of the control loop by using a timer
             double hertz = 1 / (runtime.time());
             //telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
             //telemetry.update();

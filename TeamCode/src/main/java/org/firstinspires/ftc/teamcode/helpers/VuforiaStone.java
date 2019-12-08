@@ -88,8 +88,8 @@ public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
     //delete this later
     AutoTest autoTest = new AutoTest(); //DELETE
     //dividing line
-    int line1 = 1;
-    int line2 = 2;
+    int line1 = -107;
+    int line2 = 107;
     public boolean stoneFound = false;
     public Position.position stonePos;
     public int stoneNum = 0;
@@ -130,7 +130,7 @@ public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
 
                 // Extract the X, Y, and Z components of the offset of the target relative to the robot
                 stoneFound = true;
-                tStoneX = trans.get(0);
+                tStoneX = -trans.get(0);
                 tStoneY = trans.get(1);
                 tStoneZ = trans.get(2);
                 if(tStoneX < line1){
