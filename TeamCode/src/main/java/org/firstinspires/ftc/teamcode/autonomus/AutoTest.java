@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
+import org.firstinspires.ftc.teamcode.helpers.MecanumEncoders;
 import org.firstinspires.ftc.teamcode.helpers.MotionController;
 import org.firstinspires.ftc.teamcode.helpers.Position;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
@@ -71,6 +72,7 @@ public class AutoTest extends LinearOpMode {
     public int cameraMonitorViewId;
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
+    MecanumEncoders mecanumEncoders;
     ArmDriver grabberArm;
     ClosedLoopDriving closedLoopDriver;
     public int posOffset = 0; //The block positioning offset that we have. this will be different for different starting points
@@ -85,6 +87,7 @@ public class AutoTest extends LinearOpMode {
         VuforiaStone vs = new VuforiaStone();
         vs.setup(webcam0);
         //vn.setup(webcam0);
+        Servo releaseServo = hardwareMap.servo.get("releaseServo");
         DcMotor[] driveMotors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -95,6 +98,7 @@ public class AutoTest extends LinearOpMode {
         //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
+        mecanumEncoders = new MecanumEncoders(driveMotors);
         closedLoopDriver = new ClosedLoopDriving(driveMotors);
         grabberArm = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
@@ -104,11 +108,12 @@ public class AutoTest extends LinearOpMode {
 
         telemetry.addLine("Position");
         vs.execute(webcam0);
-        waitForStart();
-        while(!isStopRequested()) {
+
+        while(!isStarted()) {
             telemetry.addLine("Position");
             Position.position p = vs.stonePos;
-            if (p == LEFT) {
+           // if (p == LEFT) {
+            if(true){
                 telemetry.addData("Position Left", vs.tStoneX);
                 //drive to left
             } else if (p == RIGHT) {
@@ -123,6 +128,9 @@ public class AutoTest extends LinearOpMode {
             }
             telemetry.update();
         }
+        waitForStart();
+        releaseServo.setPosition(.7);
+        sleep(10000);
         vs.cancel(true);
         //vn.execute(webcam0);
     }

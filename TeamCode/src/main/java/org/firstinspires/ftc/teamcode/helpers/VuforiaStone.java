@@ -121,9 +121,9 @@ public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
 
     protected Void doInBackground(WebcamName... webcamName){
         this.targets.activate();
-        while (!isCancelled()) {
-            if (((VuforiaTrackableDefaultListener) stoneTarget.getListener()).isVisible()) {
+        while (true) {
 
+            if (((VuforiaTrackableDefaultListener) stoneTarget.getListener()).isVisible()) {
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) stoneTarget.getListener()).getFtcCameraFromTarget();
                 VectorF trans = pose.getTranslation();
                 //Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
@@ -163,7 +163,9 @@ public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
                     /* double rX = rot.firstAngle;
                     double rY = rot.secondAngle;
                     double rZ = rot.thirdAngle;*/
-                break;
+                if(isCancelled()) {
+                    break;
+                }
             }
         }
         this.targets.deactivate();
