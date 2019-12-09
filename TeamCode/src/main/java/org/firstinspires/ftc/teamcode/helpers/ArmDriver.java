@@ -20,7 +20,7 @@ public class ArmDriver {
     int tiltArmMax = 1467;
     int armExtensionMax = 4800;
     //constants
-    double wristTurnSpeedCoeff = .003;
+    double wristTurnSpeedCoeff = .008;
     int armExtensionSpeed= 5;
     public ArmDriver(DcMotor [] Ml, Servo [] Sl) {
         linearMotor = Ml[0];

@@ -101,10 +101,9 @@ public class MainOP extends LinearOpMode {
             if (Math.abs(x) < deadzone) x = 0;
             if (Math.abs(R) < 0) R = 0;
             // This calls the mecanum driver which does the magic sauce
-            if(gamepad1.right_trigger != 0) {
+            if(gamepad1.left_bumper) {
                 mecanum.mecanumpower(y/2, x/2, R/2);
-            }
-            else {
+            } else {
                 mecanum.mecanumpower(y, x, R);
             }
 
@@ -120,11 +119,12 @@ public class MainOP extends LinearOpMode {
             }
 
             //tiltArm
-            if (gamepad2.left_stick_y > 0) {
-                grabberArm.tiltArm(gamepad2.left_stick_y);
+            grabberArm.tiltArm(-gamepad2.left_stick_y);
+            if(gamepad2.right_trigger != 0) {
+                grabberArm.turnGrabber(gamepad2.right_trigger);
+            } else if (gamepad2.left_trigger != 0) {
+                grabberArm.turnGrabber(-gamepad2.left_trigger);
             }
-
-            grabberArm.turnGrabber(gamepad2.left_stick_x);
             telemetry.addLine("Servo");
             telemetry.addData("Servo Position", grabberArm.wristPos);
             telemetry.update();
