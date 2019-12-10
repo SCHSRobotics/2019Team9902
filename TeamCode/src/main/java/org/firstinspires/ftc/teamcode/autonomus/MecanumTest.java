@@ -17,11 +17,11 @@ public class MecanumTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while(!isStopRequested()) {
-            mecanumEncoder.mecanumEncoders(0, 0, .5);
+            mecanumEncoder.mecanumEncoders(0, 0, .5, false);
             telemetry.addData("Forward", 0);
             telemetry.update();
             sleep(5000);
-            mecanumEncoder.mecanumEncoders(0, 0, -.5);
+            mecanumEncoder.mecanumEncoders(0, 0, -.5, false);
             telemetry.addData("Backwards", 0);
             telemetry.update();
             sleep(5000);
