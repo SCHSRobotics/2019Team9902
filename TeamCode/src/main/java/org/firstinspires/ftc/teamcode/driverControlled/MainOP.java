@@ -41,11 +41,6 @@ import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.BaseGrabber;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.StickDriver;
-import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
-import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
-import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
-import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
-import org.firstinspires.ftc.teamcode.helpers.MotionController;
 
 /**
  Non Linear Main OP mode
@@ -130,7 +125,7 @@ public class MainOP extends LinearOpMode {
             telemetry.update();
             //grabber itself
             if (gamepad2.a) {
-                grabberArm.release();
+                grabberArm.open();
             }
             if (gamepad2.b) {
                 grabberArm.grab();

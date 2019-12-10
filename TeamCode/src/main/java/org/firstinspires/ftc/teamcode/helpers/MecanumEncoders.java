@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.helpers;
 
+import android.os.Debug;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
@@ -39,7 +41,7 @@ public class MecanumEncoders {
 
 
     }
-    public void mecanumEncoders(double y, double x, double r){
+    public void mecanumEncoders(double y, double x, double r, boolean waitForEnd){
         y = y*PPIN;
         x = x*PPIN*strafeCoeff;
         r = r*rotationCircle; //if we need to rotate were gonna need to determine the legenth from the center of the 4 wheels, make a circle out of that, then multiply this by the diameter and stuff
@@ -63,14 +65,18 @@ public class MecanumEncoders {
         fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if(fl.isBusy() && fr.isBusy() && bl.isBusy() && br.isBusy()) {
-            ready = true;
-        } else {
-            ready = false;
-        }
         fl.setPower(1);
         fr.setPower(1);
         bl.setPower(1);
         br.setPower(1);
+        if(waitForEnd) {
+            while (!fl.isBusy() && !fr.isBusy() && !bl.isBusy() && !br.isBusy()) {
+                try {
+                    sleep(5);
+                } catch (InterruptedException e) {
+
+                }
+            }
+        }
     }
 }

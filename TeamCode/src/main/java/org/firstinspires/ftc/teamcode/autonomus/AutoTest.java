@@ -29,36 +29,23 @@
 
 package org.firstinspires.ftc.teamcode.autonomus;
 
-import android.os.AsyncTask;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
 import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.MecanumEncoders;
-import org.firstinspires.ftc.teamcode.helpers.MotionController;
 import org.firstinspires.ftc.teamcode.helpers.Position;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
-import org.firstinspires.ftc.teamcode.helpers.VuforiaParameters;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaStone;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.firstinspires.ftc.teamcode.helpers.Position.position.CENTER;
 import static org.firstinspires.ftc.teamcode.helpers.Position.position.LEFT;
-import static org.firstinspires.ftc.teamcode.helpers.Position.position.NOT_FOUND;
 import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
 
 //import org.firstinspires.ftc.teamcode.helpers.vuforia;
@@ -73,8 +60,8 @@ public class AutoTest extends LinearOpMode {
     public int cameraMonitorViewId;
     //starts the class things up here so they can be used in all of the things
     MecanumDriver mecanum;
-    MecanumEncoders mecanumEncoder;
-    ArmDriver grabberArm;
+    MecanumEncoders mE;
+    ArmDriver gA;
     ClosedLoopDriving closedLoopDriver;
     public int posOffset = 0; //The block positioning offset that we have. this will be different for different starting points
 
@@ -96,13 +83,11 @@ public class AutoTest extends LinearOpMode {
         driveMotors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo")};
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
-        //AccelerationSensor[] IMUs = {hardwareMap.accelerationSensor.get("imu0"), hardwareMap.accelerationSensor.get("imu1")};
 
         //make the helper classes
-        mecanumEncoder = new MecanumEncoders(driveMotors);
-        mecanumEncoder.mecanumEncoders(0, 0, 0);
-        closedLoopDriver = new ClosedLoopDriving(driveMotors);
-        grabberArm = new ArmDriver(armMotors, handServos);
+        mE = new MecanumEncoders(driveMotors);
+        mE.mecanumEncoders(0, 0, 0, false);
+        gA = new ArmDriver(armMotors, handServos);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
 
@@ -115,31 +100,64 @@ public class AutoTest extends LinearOpMode {
             telemetry.update();
         }
         waitForStart();
-        Position.position p = vs.stonePos;
-        mecanumEncoder.mecanumEncoders(10, 0, 0);
-        sleep(750);
-        mecanumEncoder.mecanumEncoders(0, -8, 0);
-        sleep(1750);
-        mecanumEncoder.mecanumEncoders(0, -5, 0);
-        grabberArm.tiltArm(100);
-        grabberArm.linearArm(50);
-        if (p == LEFT) {
-            telemetry.addData("Position Left", vs.tStoneX);
-            //mecanumEncoder.mecanumEncoders(0, 0, -45);
-            //drive to left
-        } else if (p == RIGHT) {
-            telemetry.addData("Position Right", vs.tStoneX);
-            //mecanumEncoder.mecanumEncoders(0, 0, 45);
-            //drive to Right
-        } else if (p == CENTER) {
-            telemetry.addData("Position Center", vs.tStoneX);
-            //drive to center
-        } else if (p == NOT_FOUND) {
-            telemetry.addData("Position NF", vs.tStoneX);
-            //drive to not found
+        Position.position p;
+        mE.mecanumEncoders(10, 0, 0, true);
+        mE.mecanumEncoders(0, -8, 0, true);
+        if(vs.tStoneX < 200) {
+            p = LEFT;
+            sleep(500);
+        } else {
+            mE.mecanumEncoders(0, -5, 0, true);
+            waitForReady();
+            sleep(500);
+            if(vs.tStoneX < 200){
+                p = CENTER;
+            } else{
+                p = LEFT;
+            }
+            mE.mecanumEncoders(0, 5, 0, true );
+        }
+        mE.mecanumEncoders(3, 0, 0, true);
+        mE.mecanumEncoders(0, 3, 0, true);// move to the center of the tile and in a good pos to grab all 3 blocks
+        if(p == LEFT){
+            mE.mecanumEncoders(0, 0, 30, false);
+            gA.tiltArm(500);
+            gA.linearArm(150);
+            gA.grabberWrist(50/280);
+            gA.open();
+            gA.tiltArm(-300);
+            gA.grab();
+            gA.grabberWrist(0);
+            gA.tiltArm(200);
+            gA.linearArm( 0);
+            gA.tiltArm(0);
+            mE.mecanumEncoders(0, 0, -30, true);
+        } else if(p == RIGHT){ //the Left commands, similar to right, but mirrored
+            mE.mecanumEncoders(0, 0, -30, false);
+            gA.tiltArm(500);
+            gA.linearArm(150);
+            gA.grabberWrist(230/280);
+            gA.open();
+            gA.tiltArm(-300);
+            gA.grab();
+            gA.grabberWrist(0);
+            gA.tiltArm(200);
+            gA.linearArm( 0);
+            gA.tiltArm(0);
+            mE.mecanumEncoders(0, 0, 30, true);
+        } else { //if it doesn't find anything it just assumes center and goes for it
+            gA.grabberWrist(0);
+            gA.tiltArm(500);
+            gA.linearArm(150);
+            gA.open();
+            gA.tiltArm(-300);
+            gA.grab();
+            gA.grabberWrist(0);
+            gA.tiltArm(200);
+            gA.linearArm( 0);
+            gA.tiltArm(0);
         }
 
-        releaseServo.setPosition(.7);
         sleep(10000);
         vs.cancel(true);
         //vn.execute(webcam0);
@@ -147,23 +165,23 @@ public class AutoTest extends LinearOpMode {
 
     private void blockMove(boolean lift) {
         final float targetHeight = 45.0f;
-        grabberArm.tiltArm(targetHeight);
+        gA.tiltArm(targetHeight);
         if (lift) {
-            grabberArm.release();
-            grabberArm.extendArm();
-            grabberArm.tiltArm(0);
+            gA.open();
+            gA.extendArm();
+            gA.tiltArm(0);
         }
         if (lift) {
-            grabberArm.grab();
+            gA.grab();
         } else {
-            grabberArm.release();
-            grabberArm.tiltArm(targetHeight);
-            grabberArm.retractArm();
+            gA.open();
+            gA.tiltArm(targetHeight);
+            gA.retractArm();
         }
     }
 
     private void waitForReady() {
-        while (!mecanumEncoder.ready) {
+        while (!mE.ready) {
             sleep(10);
         }
     }

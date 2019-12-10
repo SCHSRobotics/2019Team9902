@@ -51,7 +51,7 @@ public class ArmDriver {
         grabServo.setPosition(.80);
 
     }
-    public void release(){
+    public void open(){
         grabServo.setPosition(.95);
 
     }
@@ -90,5 +90,4 @@ public class ArmDriver {
         armExtensionPosition = armExtensionPosition-armExtensionSpeed;
         linearArm(armExtensionPosition);
     }
-
 }
