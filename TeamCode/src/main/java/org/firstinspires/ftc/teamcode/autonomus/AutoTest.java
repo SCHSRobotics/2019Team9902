@@ -37,10 +37,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.helpers.ArmDriver;
+import org.firstinspires.ftc.teamcode.helpers.BaseGrabber;
 import org.firstinspires.ftc.teamcode.helpers.ClosedLoopDriving;
 import org.firstinspires.ftc.teamcode.helpers.MecanumDriver;
 import org.firstinspires.ftc.teamcode.helpers.MecanumEncoders;
 import org.firstinspires.ftc.teamcode.helpers.Position;
+import org.firstinspires.ftc.teamcode.helpers.StickDriver;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaNavigation;
 import org.firstinspires.ftc.teamcode.helpers.VuforiaStone;
 
@@ -62,9 +64,8 @@ public class AutoTest extends LinearOpMode {
     MecanumDriver mecanum;
     MecanumEncoders mE;
     ArmDriver gA;
-    ClosedLoopDriving closedLoopDriver;
-    public int posOffset = 0; //The block positioning offset that we have. this will be different for different starting points
-
+    BaseGrabber bG;
+    StickDriver pokiStick;
     @Override
     public void runOpMode() {
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -74,8 +75,8 @@ public class AutoTest extends LinearOpMode {
         VuforiaNavigation vn = new VuforiaNavigation();
         VuforiaStone vs = new VuforiaStone();
         vs.setup(webcam0);
-        //vn.setup(webcam0);
-        Servo releaseServo = hardwareMap.servo.get("releaseServo");
+        Servo baseGrabber = hardwareMap.servo.get("grabServo");
+        Servo stickServo = hardwareMap.servo.get("stickServo");
         DcMotorEx[] driveMotors = {(DcMotorEx) hardwareMap.dcMotor.get("fl"), (DcMotorEx) hardwareMap.dcMotor.get("fr"), (DcMotorEx) hardwareMap.dcMotor.get("bl"), (DcMotorEx) hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -85,9 +86,11 @@ public class AutoTest extends LinearOpMode {
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
 
         //make the helper classes
+        pokiStick = new StickDriver(stickServo);
         mE = new MecanumEncoders(driveMotors);
         mE.mecanumEncoders(0, 0, 0, false);
         gA = new ArmDriver(armMotors, handServos);
+        bG = new BaseGrabber(baseGrabber);
         //MotionController motionController = new MotionController(IMUs, driveMotors);
         telemetry.addData("Status", "initeded");
 
@@ -115,7 +118,7 @@ public class AutoTest extends LinearOpMode {
             } else{
                 p = LEFT;
             }
-            mE.mecanumEncoders(0, 5, 0, true );
+            mE.mecanumEncoders(0, 5, 0, true);
         }
         mE.mecanumEncoders(3, 0, 0, true);
         mE.mecanumEncoders(0, 3, 0, true);// move to the center of the tile and in a good pos to grab all 3 blocks
@@ -157,10 +160,30 @@ public class AutoTest extends LinearOpMode {
             gA.linearArm( 0);
             gA.tiltArm(0);
         }
-
-        sleep(10000);
         vs.cancel(true);
-        //vn.execute(webcam0);
+        mE.mecanumEncoders(0, 0, 90, true);
+        mE.mecanumEncoders(84, 0, 0, true);
+        mE.mecanumEncoders(0, 12, 0,  true);
+        gA.tiltArm(200);
+        gA.linearArm(200);
+        gA.open();
+        gA.linearArm(0);
+        gA.grab();
+        gA.tiltArm(-200);
+        mE.mecanumEncoders(0,-60,0, true);
+        mE.mecanumEncoders(24, 0, 0, true);
+        mE.mecanumEncoders(0, 0, 90, true);
+        mE.mecanumEncoders(20, 0, 0, true);
+        bG.grabBase();
+        mE.mecanumEncoders(-20, 0, 0, true);
+        mE.mecanumEncoders(0, 24, 0, true);
+        mE.mecanumEncoders(24, 0, 0, true);
+        mE.mecanumEncoders(0, -24, 0, true);
+        mE.mecanumEncoders(-30, 0, 0, true);
+        mE.mecanumEncoders(58.5, 0, 0, true);
+        mE.mecanumEncoders(0, 0, 90, true);
+        mE.mecanumEncoders(36, 0, 0, true);
+        pokiStick.stickDown();
     }
 
     private void blockMove(boolean lift) {
