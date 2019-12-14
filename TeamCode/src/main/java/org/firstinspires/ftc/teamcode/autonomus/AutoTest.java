@@ -62,7 +62,6 @@ public class AutoTest extends LinearOpMode {
     MecanumDriver mecanum;
     MecanumEncoders mE;
     ArmDriver gA;
-    ClosedLoopDriving closedLoopDriver;
     public int posOffset = 0; //The block positioning offset that we have. this will be different for different starting points
 
     @Override
@@ -74,8 +73,6 @@ public class AutoTest extends LinearOpMode {
         VuforiaNavigation vn = new VuforiaNavigation();
         VuforiaStone vs = new VuforiaStone();
         vs.setup(webcam0);
-        //vn.setup(webcam0);
-        Servo releaseServo = hardwareMap.servo.get("releaseServo");
         DcMotorEx[] driveMotors = {(DcMotorEx) hardwareMap.dcMotor.get("fl"), (DcMotorEx) hardwareMap.dcMotor.get("fr"), (DcMotorEx) hardwareMap.dcMotor.get("bl"), (DcMotorEx) hardwareMap.dcMotor.get("br")};
         driveMotors[0].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[1].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -107,33 +104,37 @@ public class AutoTest extends LinearOpMode {
             p = LEFT;
             sleep(500);
         } else {
-            mE.mecanumEncoders(0, -5, 0, true);
-            waitForReady();
-            sleep(500);
+            mE.mecanumEncoders(0, 5, 0, true);
+            sleep(5000);
             if(vs.tStoneX < 200){
                 p = CENTER;
             } else{
-                p = LEFT;
+                p = RIGHT;
             }
             mE.mecanumEncoders(0, 5, 0, true );
         }
-        mE.mecanumEncoders(3, 0, 0, true);
-        mE.mecanumEncoders(0, 3, 0, true);// move to the center of the tile and in a good pos to grab all 3 blocks
+        mE.mecanumEncoders(8, 0, 0, true);
+        mE.mecanumEncoders(0, 8, 0, true);// move to the center of the tile and in a good pos to grab all 3 blocks
+        stop();
         if(p == LEFT){
-            mE.mecanumEncoders(0, 0, 30, false);
+            mE.mecanumEncoders(0, 0, 30/180, false);
             gA.tiltArm(500);
-            gA.linearArm(150);
-            gA.grabberWrist(50/280);
+            gA.linearArm(4000);
+            gA.grabberWrist(140/280);
             gA.open();
-            gA.tiltArm(-300);
+            gA.tiltArm(-100);
+            sleep(25);
+            gA.tiltArm(-100);
+            sleep(25);
+            gA.tiltArm(-100);
             gA.grab();
             gA.grabberWrist(0);
             gA.tiltArm(200);
             gA.linearArm( 0);
             gA.tiltArm(0);
-            mE.mecanumEncoders(0, 0, -30, true);
+            mE.mecanumEncoders(0, 0, -30/360, true);
         } else if(p == RIGHT){ //the Left commands, similar to right, but mirrored
-            mE.mecanumEncoders(0, 0, -30, false);
+            mE.mecanumEncoders(0, 0, -30/360, false);
             gA.tiltArm(500);
             gA.linearArm(150);
             gA.grabberWrist(230/280);
@@ -144,7 +145,7 @@ public class AutoTest extends LinearOpMode {
             gA.tiltArm(200);
             gA.linearArm( 0);
             gA.tiltArm(0);
-            mE.mecanumEncoders(0, 0, 30, true);
+            mE.mecanumEncoders(0, 0, 30/360, true);
         } else { //if it doesn't find anything it just assumes center and goes for it
             gA.grabberWrist(0);
             gA.tiltArm(500);
@@ -160,7 +161,6 @@ public class AutoTest extends LinearOpMode {
 
         sleep(10000);
         vs.cancel(true);
-        //vn.execute(webcam0);
     }
 
     private void blockMove(boolean lift) {

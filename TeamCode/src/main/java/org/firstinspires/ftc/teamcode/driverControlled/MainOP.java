@@ -105,14 +105,8 @@ public class MainOP extends LinearOpMode {
             // do the inputs stuff
            //testController(telemetry);
             //linear acutator
-            if (gamepad2.right_stick_y < 0){
-                 grabberArm.extendArm();
-
-            }
-            if (gamepad2.right_stick_y > 0) {
-                  grabberArm.retractArm();
-            }
-
+            grabberArm.linearArmChg(-gamepad2.right_stick_y);
+            telemetry.addData("LinearArmPosition", grabberArm.armPos);
             //tiltArm
             grabberArm.tiltArm(-gamepad2.left_stick_y);
             if(gamepad2.right_trigger != 0) {

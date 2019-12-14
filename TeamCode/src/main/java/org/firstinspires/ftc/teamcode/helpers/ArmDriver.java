@@ -9,14 +9,12 @@ public class ArmDriver {
 
     Servo wristServo;
     Servo grabServo;
-    int setGrabPos;
     public double wristPos = 0;
     double tiltArmPos = 0;
     int armExtensionPosition;
 
-    double linearSpeed = .8;
     double tiltSpeed = 1;
-
+    public double armPos = 0d;
     int tiltArmMax = 1467;
     int armExtensionMax = 4800;
     //constants
@@ -77,6 +75,16 @@ public class ArmDriver {
            linearMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
            linearMotor.setPower(tiltSpeed);
         }
+    }
+    public void linearArmChg(double change){
+        armPos = armPos +(change*armExtensionSpeed);
+        if(armPos > armExtensionMax){
+            armPos = armExtensionMax;
+        }
+        if(armPos < 0){
+            armPos = 0;
+        }
+        linearArm((int)armPos);
     }
     public void extendArm() {
         if(armExtensionPosition > armExtensionMax) {
