@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.autonomus;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -56,6 +57,7 @@ import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
  */
 
 @Autonomous(name="AutoOP", group="Testing")
+@Disabled
 public class AutoTest extends LinearOpMode {
     public int cameraMonitorViewId;
     //starts the class things up here so they can be used in all of the things

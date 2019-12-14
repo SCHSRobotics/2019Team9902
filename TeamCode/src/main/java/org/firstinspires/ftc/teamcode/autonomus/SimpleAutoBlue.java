@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.helpers.StickDriver;
 
 @Autonomous(name="SimpleOPBlue", group="Testing")
 
-public class SimpleAuto extends LinearOpMode {
+public class SimpleAutoBlue extends LinearOpMode {
     MecanumEncoders mE;
     ArmDriver gA;
 
