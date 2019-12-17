@@ -9,23 +9,26 @@ public class ArmDriver {
 
     Servo wristServo;
     Servo grabServo;
+    Servo tiltServo;
     public double wristPos = 0;
     double tiltArmPos = 0;
     int armExtensionPosition;
 
-    double tiltSpeed = 1;
+    double tiltSpeed = 1.5;
     public double armPos = 0d;
     int tiltArmMax = 1467;
     int armExtensionMax = 4800;
     //constants
     double wristTurnSpeedCoeff = .008;
-    int armExtensionSpeed= 5;
+    int armExtensionSpeed= 10;
+    double encoderPerDegree = 5;
     public ArmDriver(DcMotor [] Ml, Servo [] Sl) {
         linearMotor = Ml[0];
         tiltMotor = Ml[1];
 
         grabServo = Sl[0];
         wristServo = Sl[1];
+        tiltServo = Sl[2];
         grabServo.setDirection(Servo.Direction.FORWARD);
 
         tiltMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -35,8 +38,7 @@ public class ArmDriver {
         linearMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void tiltArm(float change) {
-        double rate = 1;
-        tiltArmPos += change*rate;
+        tiltArmPos += change*tiltSpeed;
         if((tiltArmPos < tiltArmMax) && (tiltArmPos > 0)){ //Change this in order to set the stopping point
             tiltMotor.setTargetPosition((int) tiltArmPos); //converts the double into an int
             tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -44,6 +46,8 @@ public class ArmDriver {
         }
         if(tiltArmPos > tiltArmMax) tiltArmPos = tiltArmMax;
         if(tiltArmPos < 0) tiltArmPos = 0;
+        double armDegrees = tiltArmPos/encoderPerDegree-1000;
+        tiltServo.setPosition(.5+armDegrees);
     }
     public void grab() {
         grabServo.setPosition(.80);

@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.helpers.BaseGrabber;
 import org.firstinspires.ftc.teamcode.helpers.MecanumEncoders;
 import org.firstinspires.ftc.teamcode.helpers.StickDriver;
 
-@Autonomous(name="SimpleOPRed", group="Testing")
+@Autonomous(name="Move Base and Go to Center, from Top Right (Red)", group="Red")
 
-public class SimpleAutoRed extends LinearOpMode {
+public class BaseAndCenterRedTop extends LinearOpMode {
     MecanumEncoders mE;
     ArmDriver gA;
 
@@ -37,7 +37,7 @@ public class SimpleAutoRed extends LinearOpMode {
         waitForStart();
 
         mE.mecanumEncoders(-5, 0, 0, true);
-        mE.mecanumEncoders(0, 35, 0, true);
+        mE.mecanumEncoders(0, 5, 0, true);
         mE.mecanumEncoders(-24, 0, 0, true);
         baseGrabber.grabBase();
         sleep(1000);

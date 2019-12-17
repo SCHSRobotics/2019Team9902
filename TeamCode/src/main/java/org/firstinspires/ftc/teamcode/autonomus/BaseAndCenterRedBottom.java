@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.helpers.BaseGrabber;
 import org.firstinspires.ftc.teamcode.helpers.MecanumEncoders;
 import org.firstinspires.ftc.teamcode.helpers.StickDriver;
 
-@Autonomous(name="SimpleOPBlue", group="Testing")
+@Autonomous(name="Move Base and Go to Center, from Bottom Right (Red)", group="Red")
 
-public class SimpleAutoBlue extends LinearOpMode {
+public class BaseAndCenterRedBottom extends LinearOpMode {
     MecanumEncoders mE;
     ArmDriver gA;
 
@@ -37,18 +37,18 @@ public class SimpleAutoBlue extends LinearOpMode {
         waitForStart();
 
         mE.mecanumEncoders(-5, 0, 0, true);
-        mE.mecanumEncoders(0, -33, 0, true);
+        mE.mecanumEncoders(0, 35, 0, true);
         mE.mecanumEncoders(-24, 0, 0, true);
         baseGrabber.grabBase();
         sleep(1000);
         mE.mecanumEncoders(20, 0, 0, true);
         baseGrabber.realseBase();
-        mE.mecanumEncoders(0, 14.5, 0, true);
+        mE.mecanumEncoders(0, -15.5, 0, true);
         mE.mecanumEncoders(-45, 0,0, true);
-        mE.mecanumEncoders(0, -14.5, 0, true);
+        mE.mecanumEncoders(0, 15.5, 0, true);
         mE.mecanumEncoders(30, 0,0, true);
         mE.mecanumEncoders(-25, 0, 0, true);
-        mE.mecanumEncoders(0, 0, .52, true);
+        mE.mecanumEncoders(0, 0, -.52, true);
         mE.mecanumEncoders(48, 0, 0, true);
         stickDriver.stickDown();
         mE.mecanumEncoders(5, 0, 0, true);
@@ -57,7 +57,7 @@ public class SimpleAutoBlue extends LinearOpMode {
         mE.mecanumEncoders(-5, 0, 0, false);
         mE.mecanumEncoders(5, 0, 0, false);
         mE.mecanumEncoders(-5, 0, 0, false);
-        mE.mecanumEncoders(0, -5, 0, true);
+        mE.mecanumEncoders(0, 5, 0, true);
         sleep(5000);
 
     }
