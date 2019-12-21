@@ -9,8 +9,8 @@ public class ArmDriver {
 
     Servo wristServo;
     Servo grabServo;
-    int setGrabPos;
-    public double wristPos = 0;
+    Servo tiltServo;
+    public double wristPos = 0; //starting position
     double tiltArmPos = 0;
     int armExtensionPosition;
 
@@ -19,15 +19,18 @@ public class ArmDriver {
 
     int tiltArmMax = 1467;
     int armExtensionMax = 4800;
+    int tiltArmStraigtUpPosition = 300;
     //constants
     double wristTurnSpeedCoeff = .008;
     int armExtensionSpeed= 5;
-    public ArmDriver(DcMotor [] Ml, Servo [] Sl) {
+    public ArmDriver(DcMotor [] Ml, Servo [] servos) {
         linearMotor = Ml[0];
         tiltMotor = Ml[1];
 
-        grabServo = Sl[0];
-        wristServo = Sl[1];
+        grabServo = servos[0];
+        wristServo = servos[1];
+        tiltServo = servos[2];
+        wristServo.setPosition(wristPos);
         grabServo.setDirection(Servo.Direction.FORWARD);
 
         tiltMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -44,6 +47,8 @@ public class ArmDriver {
             tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             tiltMotor.setPower(tiltSpeed);
         }
+        double encoderPerDegree = 6.85;
+        tiltServo.setPosition(1-tiltMotor.getCurrentPosition()/encoderPerDegree/280);
         if(tiltArmPos > tiltArmMax) tiltArmPos = tiltArmMax;
         if(tiltArmPos < 0) tiltArmPos = 0;
     }
