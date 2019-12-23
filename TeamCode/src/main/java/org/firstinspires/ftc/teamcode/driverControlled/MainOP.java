@@ -101,20 +101,14 @@ public class MainOP extends LinearOpMode {
             } else {
                 mecanum.mecanumpower(y, x, R);
             }
-
+            telemetry.addData("TiltArm", hardwareMap.dcMotor.get("tiltMotor").getCurrentPosition());
             // do the inputs stuff
            //testController(telemetry);
             //linear acutator
-            if (gamepad2.right_stick_y < 0){
-                 grabberArm.extendArm();
-
-            }
-            if (gamepad2.right_stick_y > 0) {
-                  grabberArm.retractArm();
-            }
-
+            grabberArm.linearArmChg(-gamepad2.left_stick_y);
+            telemetry.addData("LinearArmPosition", grabberArm.armPos);
             //tiltArm
-            grabberArm.tiltArm(-gamepad2.left_stick_y);
+            grabberArm.tiltArm(-gamepad2.right_stick_y);
             if(gamepad2.right_trigger != 0) {
                 grabberArm.turnGrabber(gamepad2.right_trigger);
             } else if (gamepad2.left_trigger != 0) {
@@ -130,7 +124,7 @@ public class MainOP extends LinearOpMode {
             if (gamepad2.b) {
                 grabberArm.grab();
             }
-
+            telemetry.addData("Gamepad2 Right Stick Y", gamepad2.right_stick_y);
             //
             if(gamepad1.right_bumper) {
                 intakeMotors[0].setPower(1);

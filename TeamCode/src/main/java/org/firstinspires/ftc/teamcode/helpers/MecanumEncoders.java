@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import static java.lang.Math.PI;
+import static java.lang.Math.abs;
 import static java.lang.Math.floorMod;
 import static java.lang.Math.min;
 import static java.lang.Thread.sleep;
@@ -26,7 +27,7 @@ public class MecanumEncoders {
     double encoderPerRev = 188.3; //either 188.3 or 753.2
     double gearRatio = 2d;
     double coeff = 1.4594594595d;
-
+    double motorDeadzone = 8d;
     double PPMM = (wheelDiameter*PI/encoderPerRev)*gearRatio;
     double PPIN = PPMM*mmPerInch*coeff;
     double rotationRadius = Math.sqrt(Math.pow(198.25, 2)+Math.pow(168, 2));
@@ -70,7 +71,7 @@ public class MecanumEncoders {
         bl.setPower(1);
         br.setPower(1);
         if(waitForEnd) {
-            while (!fl.isBusy() && !fr.isBusy() && !bl.isBusy() && !br.isBusy()) {
+            while ((abs(fl.getTargetPosition()-fl.getCurrentPosition())>motorDeadzone) && (abs(bl.getTargetPosition()-bl.getCurrentPosition())>motorDeadzone) && (abs(fr.getTargetPosition()-fr.getCurrentPosition())>motorDeadzone) && (abs(br.getTargetPosition()-br.getCurrentPosition())>motorDeadzone)) {
                 try {
                     sleep(5);
                 } catch (InterruptedException e) {

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomus;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.helpers.MecanumEncoders;
 
 @Autonomous(name="MecanumTest", group="Testing")
+@Disabled
 public class MecanumTest extends LinearOpMode {
     MecanumEncoders mecanumEncoder;
     @Override
@@ -17,14 +19,12 @@ public class MecanumTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while(!isStopRequested()) {
-            mecanumEncoder.mecanumEncoders(0, 0, .5, false);
+            mecanumEncoder.mecanumEncoders(0, 0, 1, true);
             telemetry.addData("Forward", 0);
             telemetry.update();
-            sleep(5000);
-            mecanumEncoder.mecanumEncoders(0, 0, -.5, false);
+            mecanumEncoder.mecanumEncoders(0, 0, -1, true);
             telemetry.addData("Backwards", 0);
             telemetry.update();
-            sleep(5000);
         }
         }
     }

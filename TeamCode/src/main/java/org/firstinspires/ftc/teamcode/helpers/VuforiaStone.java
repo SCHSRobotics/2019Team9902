@@ -44,8 +44,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.autonomus.AutoTest;
-
 import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
@@ -86,7 +84,7 @@ import static org.firstinspires.ftc.teamcode.helpers.Position.position.RIGHT;
  */
 public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
     //delete this later
-    AutoTest autoTest = new AutoTest(); //DELETE
+    //AutoTest autoTest = new AutoTest(); //DELETE
     //dividing line
     int line1 = -107;
     int line2 = 107;
@@ -102,7 +100,7 @@ public class VuforiaStone extends AsyncTask<WebcamName, Integer, Void> {
     public void setup(WebcamName webcamName) {
         final String VUFORIA_KEY =
                 "Abo0cgT/////AAABmbDm88xtoUF4mU6ziACe4Joq4soAB7QdoZtrGH22wU+0QIidhXCiCTqj5FbsU/dRJVkXE177O1PWZeAGEiD43rJS4He8f9/mqeF8nzEU4uS/kkf7bIkw2oafZImL15j+fuBlIvOdtSJlb4rPTn2oxiyMNzDWuJ7ovPXZP2rn1hbB2oRpmwTG6AgjQct9bsWBPF59Bohxy00iOz2OtUhoJOeWVlKseiO1qkQ6bS2c0qOAFgmYzfbpkssnRrtqZLyFS0JoIzdsHrr7DHUjV0kxlvNp8UJNXCbZrdNoPH1rTGaYjo7X3eZOCMmzJt7x886wvp5LWBdehe2H097KW8vVp4ooLshQ/sLuu2voA3sn4Aot";
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(autoTest.cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
