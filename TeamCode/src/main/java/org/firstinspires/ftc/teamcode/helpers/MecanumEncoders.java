@@ -26,7 +26,7 @@ public class MecanumEncoders {
     final float mmPerInch = 25.4f; //yoinked straight from vuforia
     double encoderPerRev = 188.3; //either 188.3 or 753.2
     double gearRatio = 2d;
-    double coeff = 1.4594594595d;
+    double coeff = 0.73136870272d;
     double motorDeadzone = 8d;
     double PPMM = (wheelDiameter*PI/encoderPerRev)*gearRatio;
     double PPIN = PPMM*mmPerInch*coeff;

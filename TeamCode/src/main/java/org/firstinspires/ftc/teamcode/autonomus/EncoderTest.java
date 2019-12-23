@@ -14,15 +14,16 @@ public class EncoderTest extends LinearOpMode {
         telemetry.clear();
         telemetry.addLine("Running Motor Test");
         telemetry.update();
-        DcMotor[] motors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br"), hardwareMap.dcMotor.get("fr"), hardwareMap.dcMotor.get("tiltArm"), hardwareMap.dcMotor.get("linearMotor")};
+        DcMotor[] motors = {hardwareMap.dcMotor.get("fl"), hardwareMap.dcMotor.get("bl"), hardwareMap.dcMotor.get("br"), hardwareMap.dcMotor.get("fr")};
         telemetry.addData("Testing This Many Motors:", motors.length);
 
         for (int i = 0; i < motors.length; i++){
             motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors[i].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motors[i].setPower(.1);
-            sleep(5);
+            sleep(15);
             motors[i].setPower(0);
+            sleep(15);
             if(motors[i].getCurrentPosition() > 0) {
                 telemetry.addData("%s Motor Passed", motors[i].getDeviceName());
                 telemetry.update();
@@ -35,8 +36,9 @@ public class EncoderTest extends LinearOpMode {
                 motors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 motors[i].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motors[i].setPower(-.1);
-                sleep(5);
+                sleep(15);
                 motors[i].setPower(0);
+                sleep(15);
             }
             if(motors[i].getCurrentPosition() < 0) {
                 telemetry.addData("%s Motor Passed", motors[i].getDeviceName());
