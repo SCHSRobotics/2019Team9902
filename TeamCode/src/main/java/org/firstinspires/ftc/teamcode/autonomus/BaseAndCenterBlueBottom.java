@@ -34,12 +34,14 @@ public class BaseAndCenterBlueBottom extends LinearOpMode {
         StickDriver stickDriver = new StickDriver(hardwareMap.servo.get("stickServo"));
 
         waitForStart();
-
         mE.mecanumEncoders(-5, 0, 0, true);
+
+
         mE.mecanumEncoders(0, -33, 0, true);
-        mE.mecanumEncoders(-24, 0, 0, true);
+        mE.mecanumEncoders(-26, 0, 0, true);
         baseGrabber.grabBase();
         sleep(1000);
+        mE.mecanumEncoders(-2, 0, 0, true);
         mE.mecanumEncoders(20, 0, 0, true);
         baseGrabber.realseBase();
         mE.mecanumEncoders(0, 15, 0, true);
@@ -47,7 +49,7 @@ public class BaseAndCenterBlueBottom extends LinearOpMode {
         mE.mecanumEncoders(0, -15, 0, true);
         mE.mecanumEncoders(30, 0,0, true);
         mE.mecanumEncoders(-25, 0, 0, true);
-        mE.mecanumEncoders(0, 0, .52, true);
+        mE.mecanumEncoders(0, 0, .26, true);
         mE.mecanumEncoders(48, 0, 0, true);
         stickDriver.stickDown();
         mE.mecanumEncoders(5, 0, 0, true);

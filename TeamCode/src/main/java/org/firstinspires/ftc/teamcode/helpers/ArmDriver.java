@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 public class ArmDriver {
+    public boolean doServo= true;
     DcMotor linearMotor;
     DcMotor tiltMotor;
 
@@ -11,7 +12,7 @@ public class ArmDriver {
     Servo grabServo;
     Servo tiltServo;
     public double wristPos = 0; //starting position
-    double tiltArmPos = 0;
+    public double tiltArmPos = 0;
     int armExtensionPosition;
 
     double tiltSpeed = 2;
@@ -20,11 +21,11 @@ public class ArmDriver {
     int armExtensionMax = 2450;
     //constants
     double wristTurnSpeedCoeff = .008;
-    int armExtensionSpeed= 10;
+    int armExtensionSpeed= 25;
     double encoderPerDegree = 5;
     public ArmDriver(DcMotor [] Ml, Servo [] servos) {
-        linearMotor = Ml[0];
-        tiltMotor = Ml[1];
+        linearMotor = Ml[1];
+        tiltMotor = Ml[0];
 
         grabServo = servos[0];
         wristServo = servos[1];
@@ -45,10 +46,11 @@ public class ArmDriver {
             tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             tiltMotor.setPower(tiltSpeed);
         }
+        if(doServo){
         double encoderPerDegree = 7;
         tiltServo.setPosition(1-tiltMotor.getCurrentPosition()/encoderPerDegree/280);
         if(tiltArmPos > tiltArmMax) tiltArmPos = tiltArmMax;
-        if(tiltArmPos < 0) tiltArmPos = 0;
+        if(tiltArmPos < 0) tiltArmPos = 0;}
     }
     public void grab() {
         grabServo.setPosition(.80);

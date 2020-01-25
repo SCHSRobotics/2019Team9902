@@ -11,9 +11,9 @@ public class BaseGrabber {
         baseServo.setPosition(0);
     }
     public void grabBase(){
-        baseServo.setPosition(.64);
+        baseServo.setPosition(.9);
     }
     public void realseBase(){
-        baseServo.setPosition(0);
+        baseServo.setPosition(.26);
     }
 }

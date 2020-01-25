@@ -49,6 +49,7 @@ import org.firstinspires.ftc.teamcode.helpers.StickDriver;
 
 @TeleOp(name="Main OP", group="LinearOPMode")
 public class MainOP extends LinearOpMode {
+    double servoPos;
     private ElapsedTime runtime = new ElapsedTime(); // just starts the elasped time thing for the hertz calc
     //starts the class things up here so they can be used in all of the things
     private byte intakeDebounce = 0;
@@ -96,7 +97,7 @@ public class MainOP extends LinearOpMode {
             if (Math.abs(x) < deadzone) x = 0;
             if (Math.abs(R) < 0) R = 0;
             // This calls the mecanum driver which does the magic sauce
-            if(gamepad1.left_bumper) {
+            if(gamepad1.left_trigger != 0 || gamepad1.right_trigger != 0) {
                 mecanum.mecanumpower(y/2, x/2, R/2);
             } else {
                 mecanum.mecanumpower(y, x, R);
@@ -114,8 +115,20 @@ public class MainOP extends LinearOpMode {
             } else if (gamepad2.left_trigger != 0) {
                 grabberArm.turnGrabber(-gamepad2.left_trigger);
             }
+            if(gamepad2.dpad_left || gamepad2.dpad_right){
+                grabberArm.doServo = false;
+            }
+            if(!grabberArm.doServo){
+                if(gamepad2.dpad_up){
+                    handServos[2].setPosition(handServos[2].getPosition() + .02);
+                } else if (gamepad2.dpad_down){
+                    handServos[2].setPosition(handServos[2].getPosition() -.02);
+                }
+            }
             telemetry.addLine("Servo");
             telemetry.addData("Servo Position", grabberArm.wristPos);
+            telemetry.addLine("Tilt Arm");
+            telemetry.addData("Tilt Arm Disparity", grabberArm.armPos-armMotors[1].getCurrentPosition());
             telemetry.update();
             //grabber itself
             if (gamepad2.a) {
@@ -129,7 +142,10 @@ public class MainOP extends LinearOpMode {
             if(gamepad1.right_bumper) {
                 intakeMotors[0].setPower(1);
                 intakeMotors[1].setPower(-1);
-            }else {
+            }else if(gamepad1.left_bumper){
+                intakeMotors[0].setPower(-1);
+                intakeMotors[1].setPower(1);
+            } else {
                 intakeMotors[0].setPower(0);
                 intakeMotors[1].setPower(0);
             }
@@ -144,9 +160,6 @@ public class MainOP extends LinearOpMode {
             }
             if(gamepad1.dpad_right){
                 stickDriver.stickDown();
-            }
-            if(gamepad1.left_bumper){
-                baseGrabber.grabberAllTheWayBack();
             }
             double hertz = 1 / (runtime.time());
             //telemetry.addData("Hertz", "Hertz: (%.2f)", hertz); //Show it to the user
