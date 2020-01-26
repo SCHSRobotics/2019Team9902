@@ -33,7 +33,8 @@ public class BaseAndCenterBlueTop extends LinearOpMode {
         gA = new ArmDriver(armMotors, handServos);
         BaseGrabber baseGrabber = new BaseGrabber(hardwareMap.servo.get("baseServo"));
         StickDriver stickDriver = new StickDriver(hardwareMap.servo.get("stickServo"));
-
+        stickDriver.stickUp();
+        baseGrabber.grabberAllTheWayBack();
         waitForStart();
         mE.mecanumEncoders(-7, 0, 0, true);
         hardwareMap.servo.get("baseServo").setPosition(.1);
@@ -48,7 +49,7 @@ public class BaseAndCenterBlueTop extends LinearOpMode {
         baseGrabber.realseBase();
         mE.mecanumEncoders(0, 14.5, 0, true);
         mE.mecanumEncoders(-45, 0,0, true);
-        mE.mecanumEncoders(0, -14.5, 0, true);
+        mE.mecanumEncoders(0, -17, 0, true);
         mE.mecanumEncoders(30, 0,0, true);
         mE.mecanumEncoders(-25, 0, 0, true);
         mE.mecanumEncoders(0, 0, .26, true);
@@ -60,7 +61,7 @@ public class BaseAndCenterBlueTop extends LinearOpMode {
         mE.mecanumEncoders(-5, 0, 0, false);
         mE.mecanumEncoders(5, 0, 0, false);
         mE.mecanumEncoders(-5, 0, 0, false);
-        mE.mecanumEncoders(0, -5, 0, true);
+        mE.mecanumEncoders(0, -10, 0, true);
         sleep(5000);
 
     }

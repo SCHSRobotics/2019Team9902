@@ -24,6 +24,8 @@ public class BaseAndCenterBlueBottom extends LinearOpMode {
         driveMotors[2].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         driveMotors[3].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Servo[] handServos = {hardwareMap.servo.get("grabServo"), hardwareMap.servo.get("wristServo"), hardwareMap.servo.get("tiltServo")};
+        DcMotor[] intakeMotors = {hardwareMap.dcMotor.get("intakeRight"), hardwareMap.dcMotor.get("intakeLeft")};
+
         DcMotor[] armMotors = {hardwareMap.dcMotor.get("tiltMotor"), hardwareMap.dcMotor.get("linearMotor")};
 
         //make the helper classes
@@ -32,23 +34,26 @@ public class BaseAndCenterBlueBottom extends LinearOpMode {
         gA = new ArmDriver(armMotors, handServos);
         BaseGrabber baseGrabber = new BaseGrabber(hardwareMap.servo.get("baseServo"));
         StickDriver stickDriver = new StickDriver(hardwareMap.servo.get("stickServo"));
-
+        stickDriver.stickUp();
+        baseGrabber.grabberAllTheWayBack();
         waitForStart();
+        intakeMotors[0].setPower(-1);
+        intakeMotors[1].setPower(1);
+
         mE.mecanumEncoders(-5, 0, 0, true);
-
-
         mE.mecanumEncoders(0, -33, 0, true);
         mE.mecanumEncoders(-26, 0, 0, true);
         baseGrabber.grabBase();
-        sleep(1000);
-        mE.mecanumEncoders(-2, 0, 0, true);
-        mE.mecanumEncoders(20, 0, 0, true);
+        intakeMotors[0].setPower(0);
+        intakeMotors[1].setPower(0);
+        sleep(750);
+        mE.mecanumEncoders(25, 0, 0, true);
         baseGrabber.realseBase();
         mE.mecanumEncoders(0, 15, 0, true);
         mE.mecanumEncoders(-45, 0,0, true);
         mE.mecanumEncoders(0, -15, 0, true);
         mE.mecanumEncoders(30, 0,0, true);
-        mE.mecanumEncoders(-25, 0, 0, true);
+        mE.mecanumEncoders(-30, 0, 0, true);
         mE.mecanumEncoders(0, 0, .26, true);
         mE.mecanumEncoders(48, 0, 0, true);
         stickDriver.stickDown();

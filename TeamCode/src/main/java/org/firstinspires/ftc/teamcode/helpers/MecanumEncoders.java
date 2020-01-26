@@ -26,7 +26,7 @@ public class MecanumEncoders {
     private double brAccel;
     private double frAccel;
     private double accel = 0.1;
-
+    public boolean customSpeed;
     public boolean ready = false;
     double power = .8;
     double wheelDiameter = 100d; //selfexplanitory, in mm
@@ -50,8 +50,13 @@ public class MecanumEncoders {
         br = M1[3];
         motorList = M1;
     }
-
+    public void mecanumEncoders(double y, double x, double r, boolean waitForEnd, double speed){
+        power = speed;
+        mecanumEncoders(y, x, r, waitForEnd);
+        power = .8;
+    }
     public void mecanumEncoders(double y, double x, double r, boolean waitForEnd) {
+
         y = y * PPIN;
         x = x * PPIN * strafeCoeff;
         r = r * rotationCircle; //if we need to rotate were gonna need to determine the legenth from the center of the 4 wheels, make a circle out of that, then multiply this by the diameter and stuff

@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.autonomus;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+@Disabled
 @Autonomous(name = "Encoder Test", group = "Testing")
 public class EncoderTest extends LinearOpMode {
     @Override
