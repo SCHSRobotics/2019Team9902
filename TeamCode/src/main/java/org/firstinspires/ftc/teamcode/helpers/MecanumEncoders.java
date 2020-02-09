@@ -35,7 +35,7 @@ public class MecanumEncoders {
     double encoderPerRev = 188.3; //either 188.3 or 753.2
     double gearRatio = 2d;
     double coeff = 0.73136870272d;
-    double motorDeadzone = 8d;
+    double motorDeadzone = 12d;
     double PPMM = (wheelDiameter * PI / encoderPerRev) * gearRatio;
     double PPIN = PPMM * mmPerInch * coeff;
     double rotationRadius = Math.sqrt(Math.pow(198.25, 2) + Math.pow(168, 2));
